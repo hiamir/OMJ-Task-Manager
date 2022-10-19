@@ -18,4 +18,5 @@
             {{ $slot }}
         </div>
     </body>
+    <script src="https://unpkg.com/flowbite@1.5.1/dist/flowbite.js" defer></script>
 </html>
