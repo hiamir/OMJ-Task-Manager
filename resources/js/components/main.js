@@ -11,6 +11,7 @@ export function Main(){
 
          init() {
              Alpine.effect(() => {
+                 this.darkMode=true;
                  console.log(this.darkMode);
              });
          }
