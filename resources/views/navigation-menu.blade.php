@@ -5,11 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <img x-show="darkMode" class="w-14 h-14" src="{{ asset('storage/logo-dark.svg') }}" alt="">
-                        <img x-show="!darkMode" class="w-14 h-14" src="{{ asset('storage/logo-light.svg') }}" alt="">
-{{--                        <x-jet-application-mark class="block h-9 w-auto"/>--}}
-                    </a>
+                        <x-jet-application-mark class="block h-9 w-auto"/>
                 </div>
 
                 <!-- Navigation Links -->
