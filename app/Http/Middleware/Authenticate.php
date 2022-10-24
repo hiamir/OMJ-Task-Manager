@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\Auth;
 
 class Authenticate extends Middleware
 {
@@ -15,7 +17,8 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
-            return route('login');
+            $uri=explode('/',$request->getRequestUri());
+            return ( ($uri[1] === 'admin') ? route('admin.login') : route('login'));
         }
     }
 }

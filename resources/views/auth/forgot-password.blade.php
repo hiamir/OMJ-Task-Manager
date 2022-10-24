@@ -1,3 +1,5 @@
+@props(['guard'=>explode('/',$request->getRequestUri())[1]])
+
 <x-guest-layout>
     <x-jet-authentication-card>
         <x-slot name="logo">
@@ -16,7 +18,7 @@
 
         <x-jet-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('password.email') }}">
+        <form method="POST" action="{{ ($guard === 'admin') ? route('admin.password.email') : route('password.email') }}">
             @csrf
 
             <div class="block">

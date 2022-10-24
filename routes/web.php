@@ -18,11 +18,18 @@ Route::get('/', function () {
 });
 
 Route::middleware([
-    'auth:sanctum',
+    'auth:sanctum,web',
     config('jetstream.auth_session'),
     'verified'
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::group([
+        'middleware'=>'auth:web',
+    ],function() {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+        Route::post('logout', [\App\Http\Controllers\UserController::class, 'destroy'])->name('logout');
+    });
 });
+
+

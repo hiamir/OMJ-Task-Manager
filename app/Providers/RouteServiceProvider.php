@@ -19,6 +19,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const HOME = '/dashboard';
 
+    public static function redirectTo($guard): string
+    {
+        return $guard.'/dashboard';
+    }
+
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
      *
@@ -32,6 +37,9 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
+
+            Route::middleware('admin')
+                ->group(base_path('routes/admin.php'));
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
