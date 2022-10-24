@@ -1,3 +1,4 @@
+@props(['guard'=>explode('/',$request->getRequestUri())[1]])
 <x-guest-layout>
     <x-jet-authentication-card>
         <x-slot name="logo">
@@ -6,10 +7,10 @@
 
         <x-jet-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('password.update') }}">
+        <form method="POST" action="{{  ($guard === 'admin') ? route('admin.password.update') : route('password.update')  }}">
             @csrf
 
-            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+            <input type="hidden" name="token" value="{{  $request->route('token') }}">
 
             <div class="block">
                 <x-jet-label for="email" value="{{ __('Email') }}" />
