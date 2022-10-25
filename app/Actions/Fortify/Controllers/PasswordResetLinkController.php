@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Password;
 use Laravel\Fortify\Contracts\FailedPasswordResetLinkRequestResponse;
 use Laravel\Fortify\Contracts\RequestPasswordResetLinkViewResponse;
 use Laravel\Fortify\Contracts\SuccessfulPasswordResetLinkRequestResponse;
-use Laravel\Fortify\Fortify;
+use App\Actions\Fortify\Fortify;
 
 class PasswordResetLinkController extends Controller
 {
@@ -21,6 +21,7 @@ class PasswordResetLinkController extends Controller
     public function __construct(StatefulGuard $guard)
     {
        $this->guard=$guard;
+
     }
     /**
      * Show the reset password link request view.
@@ -47,7 +48,8 @@ class PasswordResetLinkController extends Controller
         // to send the link, we will examine the response then see the message we
         // need to show to the user. Finally, we'll send out a proper response.
         $status = $this->broker()->sendResetLink(
-            $request->only(Fortify::email())
+            $request->only('email')
+
         );
 
         return $status == Password::RESET_LINK_SENT
@@ -62,6 +64,7 @@ class PasswordResetLinkController extends Controller
      */
     protected function broker(): PasswordBroker
     {
-        return Password::broker(config('fortify.passwords'));
+        return Password::broker('admins');
+//        return Password::broker(config('fortify.passwords'));
     }
 }

@@ -18,11 +18,16 @@ Route::group([
     'prefix' => 'admin',
     'as' => 'admin.'
 ], function () {
-    Route::get('login', [\App\Http\Controllers\AdminController::class, 'loginForm']);
-    Route::post('login', [\App\Http\Controllers\AdminController::class, 'store'])->name('login');
-    Route::get('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'create'])->name('password.request');
-    Route::post('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
-
+    Route::get('login', [\App\Http\Controllers\AdminController::class, 'loginForm'])->name('login');
+    Route::post('login', [\App\Http\Controllers\AdminController::class, 'store']);
+//    Route::get('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'create'])->name('password.request');
+//    Route::post('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
+//    Route::get('reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
+//    Route::post('reset-password', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'store'])->name('password.update');
+    Route::get('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::get('/reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::post('/reset-password', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'store'])->name('password.update');
 });
 
 

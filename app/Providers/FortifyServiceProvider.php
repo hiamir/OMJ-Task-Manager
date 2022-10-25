@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers;
+use Laravel\Fortify\Fortify;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use App\Actions\Fortify\AttemptToAuthenticate;
 use App\Actions\Fortify\RedirectIfTwoFactorAuthenticatable;
-use Laravel\Fortify\Fortify;
+use App\Actions\Fortify\Controllers\NewPasswordController;
 use App\Actions\Fortify\Controllers\PasswordResetLinkController;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -28,7 +29,7 @@ class FortifyServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app
-            ->when([AdminController::class, AttemptToAuthenticate::class, RedirectIfTwoFactorAuthenticatable::class,PasswordResetLinkController::class])
+            ->when([AdminController::class, AttemptToAuthenticate::class, RedirectIfTwoFactorAuthenticatable::class,PasswordResetLinkController::class, NewPasswordController::class])
             ->needs(StatefulGuard::class)
             ->give(function () {
                 return Auth::guard('admin');

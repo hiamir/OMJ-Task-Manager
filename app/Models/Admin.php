@@ -21,6 +21,8 @@ class Admin extends Authenticatable implements MustVerifyEmail
     use TwoFactorAuthenticatable;
 
     protected $guard='admin';
+    protected $table='admins';
+
     /**
      * The attributes that are mass assignable.
      *
