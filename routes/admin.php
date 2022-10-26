@@ -28,6 +28,11 @@ Route::group([
     Route::get('/reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
     Route::post('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::post('/reset-password', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'store'])->name('password.update');
+
+
+//    Route::put('/user/profile-information', [ProfileInformationController::class, 'update'])
+//        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+//        ->name('user-profile-information.update');
 });
 
 
@@ -44,6 +49,9 @@ Route::middleware([
         Route::get('dashboard', function () {
             return view('admin/dashboard');
         })->name('dashboard');
+
+        Route::get('/profile', [\App\Http\Controllers\Livewire\AdminProfileController::class, 'show'])->name('profile.show');
+        Route::put('/profile-information', [\App\Actions\Fortify\Controllers\ProfileInformationController::class, 'update'])->name('user-profile-information.update');
         Route::post('logout', [\App\Http\Controllers\AdminController::class, 'destroy'])->name('logout');
     });
 });

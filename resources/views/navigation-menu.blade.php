@@ -131,7 +131,7 @@
                                 {{ __('Manage Account') }}
                             </div>
 
-                            <x-jet-dropdown-link href="{{ route('profile.show') }}">
+                            <x-jet-dropdown-link href="{{ (Auth::guard('admin')->check()) ? route('admin.profile.show') : route('profile.show') }}">
                                 {{ __('Profile') }}
                             </x-jet-dropdown-link>
 
