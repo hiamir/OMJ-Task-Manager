@@ -2,6 +2,7 @@
 
 namespace App\Actions\Jetstream;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Jetstream\Contracts\DeletesTeams;
 use Laravel\Jetstream\Contracts\DeletesUsers;
@@ -50,10 +51,12 @@ class DeleteUser implements DeletesUsers
      */
     protected function deleteTeams($user)
     {
-        $user->teams()->detach();
+        if(!Auth::guard('admin')->check()) {
+            $user->teams()->detach();
 
-        $user->ownedTeams->each(function ($team) {
-            $this->deletesTeams->delete($team);
-        });
+            $user->ownedTeams->each(function ($team) {
+                $this->deletesTeams->delete($team);
+            });
+        }
     }
 }

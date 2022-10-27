@@ -39,9 +39,9 @@
                 </div>
 
                 <div class="flex mt-4">
-                      <span class="flex bg-white border-[10px]">
+                    <span class="flex bg-white border-[10px]">
                     {!! $this->user->twoFactorQrCodeSvg() !!}
-                      </span>
+                    </span>
                 </div>
 
                 <div class="mt-4 max-w-xl text-sm text-gray-600">

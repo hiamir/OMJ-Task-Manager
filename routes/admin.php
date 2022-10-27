@@ -1,6 +1,12 @@
 <?php
 
+use App\Actions\Fortify\Controllers\TwoFactorAuthenticatedSessionController;
+use App\Actions\Fortify\Controllers\TwoFactorAuthenticationController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Http\Controllers\ConfirmedTwoFactorAuthenticationController;
+use Laravel\Fortify\Http\Controllers\RecoveryCodeController;
+use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
+use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +58,25 @@ Route::middleware([
 
         Route::get('/profile', [\App\Http\Controllers\Livewire\AdminProfileController::class, 'show'])->name('profile.show');
         Route::put('/profile-information', [\App\Actions\Fortify\Controllers\ProfileInformationController::class, 'update'])->name('user-profile-information.update');
+        Route::get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
+        Route::post('/admin/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store'])->name('two-factor.enable');
+
+        Route::post('/admin/confirmed-two-factor-authentication', [ConfirmedTwoFactorAuthenticationController::class, 'store'])->name('two-factor.confirm');
+
+        Route::delete('/admin/two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy'])
+            ->name('two-factor.disable');
+
+        Route::get('/admin/two-factor-qr-code', [TwoFactorQrCodeController::class, 'show'])
+            ->name('two-factor.qr-code');
+
+        Route::get('/admin/two-factor-secret-key', [TwoFactorSecretKeyController::class, 'show'])
+            ->name('two-factor.secret-key');
+
+        Route::get('/admin/two-factor-recovery-codes', [RecoveryCodeController::class, 'index'])
+            ->name('two-factor.recovery-codes');
+
+        Route::post('/admin/two-factor-recovery-codes', [RecoveryCodeController::class, 'store']);
+
         Route::post('logout', [\App\Http\Controllers\AdminController::class, 'destroy'])->name('logout');
     });
 });
