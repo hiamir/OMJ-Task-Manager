@@ -24,8 +24,9 @@ Route::group([
     'prefix' => 'admin',
     'as' => 'admin.'
 ], function () {
-    Route::get('login', [\App\Http\Controllers\AdminController::class, 'loginForm'])->name('login');
+    Route::middleware('guard-check')->get('login', [\App\Http\Controllers\AdminController::class, 'loginForm'])->name('login');
     Route::post('login', [\App\Http\Controllers\AdminController::class, 'store']);
+    Route::post('two-factor-logout', [TwoFactorAuthenticatedSessionController::class, 'adminTwoFactorLogout'])->name('twoFactorLogout');
 //    Route::get('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'create'])->name('password.request');
 //    Route::post('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
 //    Route::get('reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
@@ -34,7 +35,8 @@ Route::group([
     Route::get('/reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
     Route::post('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::post('/reset-password', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'store'])->name('password.update');
-
+    Route::get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
+    Route::post('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'store'])->name('two-factor.store');;
 
 //    Route::put('/user/profile-information', [ProfileInformationController::class, 'update'])
 //        ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
@@ -58,7 +60,7 @@ Route::middleware([
 
         Route::get('/profile', [\App\Http\Controllers\Livewire\AdminProfileController::class, 'show'])->name('profile.show');
         Route::put('/profile-information', [\App\Actions\Fortify\Controllers\ProfileInformationController::class, 'update'])->name('user-profile-information.update');
-        Route::get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
+
         Route::post('/admin/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store'])->name('two-factor.enable');
 
         Route::post('/admin/confirmed-two-factor-authentication', [ConfirmedTwoFactorAuthenticationController::class, 'store'])->name('two-factor.confirm');

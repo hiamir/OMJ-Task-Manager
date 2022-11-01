@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\LoginRateLimiter;
@@ -35,6 +36,7 @@ class AttemptToAuthenticate
     {
         $this->guard = $guard;
         $this->limiter = $limiter;
+
     }
 
     /**

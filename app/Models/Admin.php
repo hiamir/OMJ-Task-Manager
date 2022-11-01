@@ -63,6 +63,10 @@ class Admin extends Authenticatable implements MustVerifyEmail
         'profile_photo_url',
     ];
 
+    public function isAdmin(): bool{
+        return true;
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPassword($token));

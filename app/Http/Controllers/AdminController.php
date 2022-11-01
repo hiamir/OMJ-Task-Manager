@@ -8,8 +8,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Routing\Pipeline;
 use App\Actions\Fortify\AttemptToAuthenticate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Actions\EnsureLoginIsNotThrottled;
-use Laravel\Fortify\Actions\PrepareAuthenticatedSession;
+use App\Actions\Fortify\PrepareAuthenticatedSession;
 use App\Actions\Fortify\RedirectIfTwoFactorAuthenticatable;
 use App\Http\Responses\AdminLoginResponse;
 use Laravel\Fortify\Contracts\LoginViewResponse;
@@ -36,6 +37,7 @@ class AdminController extends Controller
     public function __construct(StatefulGuard $guard)
     {
         $this->guard = $guard;
+
 
     }
 
@@ -76,6 +78,7 @@ class AdminController extends Controller
      */
     protected function loginPipeline(LoginRequest $request)
     {
+
         if (Fortify::$authenticateThroughCallback) {
             return (new \Illuminate\Pipeline\Pipeline(app()))->send($request)->through(array_filter(
                 call_user_func(Fortify::$authenticateThroughCallback, $request)
@@ -90,9 +93,11 @@ class AdminController extends Controller
 
         return (new Pipeline(app()))->send($request)->through(array_filter([
             config('fortify.limiters.login') ? null : EnsureLoginIsNotThrottled::class,
+
             Features::enabled(Features::twoFactorAuthentication()) ? RedirectIfTwoFactorAuthenticatable::class : null,
             AttemptToAuthenticate::class,
             PrepareAuthenticatedSession::class,
+
         ]));
     }
 
@@ -104,12 +109,16 @@ class AdminController extends Controller
      */
     public function destroy(Request $request): AdminLogoutResponse
     {
+
         Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
+
         return app(AdminLogoutResponse::class);
     }
+
+
 }

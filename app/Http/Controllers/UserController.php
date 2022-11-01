@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Routing\Pipeline;
 use App\Actions\Fortify\AttemptToAuthenticate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Actions\EnsureLoginIsNotThrottled;
 use Laravel\Fortify\Actions\PrepareAuthenticatedSession;
 use App\Actions\Fortify\RedirectIfTwoFactorAuthenticatable;
@@ -36,6 +37,8 @@ class UserController extends Controller
     public function __construct(StatefulGuard $guard)
     {
         $this->guard = $guard;
+        $model = ($guard->getProvider()->getModel());
+        if ($model === 'App\Models\User')  Session::put('guard', 'web');
     }
 
     public function loginForm(){

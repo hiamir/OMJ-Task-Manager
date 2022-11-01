@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Events\TwoFactorAuthenticationChallenged;
 use Laravel\Fortify\Fortify;
@@ -39,6 +40,8 @@ class RedirectIfTwoFactorAuthenticatable
 
         $this->guard = $guard;
         $this->limiter = $limiter;
+        $model = $this->guard->getProvider()->getModel();
+
     }
 
     /**
@@ -50,8 +53,9 @@ class RedirectIfTwoFactorAuthenticatable
      */
     public function handle($request, $next)
     {
-        $user = $this->validateCredentials($request);
 
+        $user = $this->validateCredentials($request);
+        Session::put('active_two_factor','admin');
         if (Fortify::confirmsTwoFactorAuthentication()) {
             if (optional($user)->two_factor_secret &&
                 !is_null(optional($user)->two_factor_confirmed_at) &&
@@ -146,6 +150,8 @@ class RedirectIfTwoFactorAuthenticatable
         ]);
 
         TwoFactorAuthenticationChallenged::dispatch($user);
+        $table = $user->getTable();
+        Session::put('table', $table);
 
         if ($user->getTable() == 'admins') {
 
@@ -153,6 +159,7 @@ class RedirectIfTwoFactorAuthenticatable
                 ? response()->json(['admin.two_factor' => true])
                 : redirect()->route('admin.two-factor.login');
         } else {
+
             return $request->wantsJson()
                 ? response()->json(['two_factor' => true])
                 : redirect()->route('two-factor.login');

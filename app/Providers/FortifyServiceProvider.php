@@ -4,6 +4,11 @@ namespace App\Providers;
 use App\Actions\Fortify\ConfirmPassword;
 use App\Actions\Fortify\Controllers\ProfileInformationController;
 use App\Actions\Fortify\Controllers\TwoFactorAuthenticatedSessionController;
+use App\Actions\Fortify\Requests\TwoFactorLoginRequest;
+use Illuminate\Support\Facades\Session;
+use App\Actions\Fortify\PrepareAuthenticatedSession;
+use Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
 use Laravel\Fortify\Fortify;
 
 use App\Actions\Fortify\CreateNewUser;
@@ -32,12 +37,44 @@ class FortifyServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app
-            ->when([AdminController::class, AttemptToAuthenticate::class, RedirectIfTwoFactorAuthenticatable::class,ConfirmPassword::class,
-                PasswordResetLinkController::class, NewPasswordController::class,ProfileInformationController::class, UpdateUserProfileInformation::class,TwoFactorAuthenticatedSessionController::class])
+            ->when([AdminController::class, AttemptToAuthenticate::class, RedirectIfTwoFactorAuthenticatable::class,ConfirmPassword::class,PrepareAuthenticatedSession::class,
+                PasswordResetLinkController::class, NewPasswordController::class,ProfileInformationController::class, UpdateUserProfileInformation::class,StatefulGuard::class,
+                TwoFactorAuthenticatedSessionController::class,TwoFactorLoginRequest::class])
             ->needs(StatefulGuard::class)
             ->give(function () {
                 return Auth::guard('admin');
             });
+
+        $this->app->instance(FailedTwoFactorLoginResponse::class, new class implements FailedTwoFactorLoginResponse {
+            public function toResponse($request)
+            {
+                if(Session::get('active_two_factor') === 'admin'){
+                    return redirect('admin/two-factor-challenge');
+                }else{
+                    return redirect('/two-factor-challenge');
+                }
+
+
+            }
+        });
+
+
+
+        $this->app->instance(TwoFactorLoginResponse::class, new class implements TwoFactorLoginResponse {
+            public function toResponse($request)
+            {
+                if(Session::get('active_two_factor') === 'admin'){
+                    Session::forget('active_two_factor');
+                    return redirect('admin/dashboard');
+                }else{
+                    Session::forget('active_two_factor');
+                    return redirect('/dashboard');
+                }
+
+            }
+        });
+
+
     }
 
     /**
