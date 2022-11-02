@@ -74,11 +74,13 @@ class TwoFactorAuthenticatedSessionController extends Controller
 
     public function adminTwoFactorLogout(Request $request)
     {
+       $session=Session::get('active_two_factor');
         Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
-        return (Session::get('active_two_factor') ? redirect()->route('admin.login') : redirect()->route('login'));
+
+        return (($session === 'admin') ? redirect()->route('admin.login') : redirect()->route('login'));
     }
 }

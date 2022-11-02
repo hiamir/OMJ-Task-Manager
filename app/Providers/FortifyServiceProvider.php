@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Providers;
+use App\Actions\Fortify\AdminRedirectIfTwoFactorAuthenticatable;
 use App\Actions\Fortify\ConfirmPassword;
 use App\Actions\Fortify\Controllers\ProfileInformationController;
 use App\Actions\Fortify\Controllers\TwoFactorAuthenticatedSessionController;
 use App\Actions\Fortify\Requests\TwoFactorLoginRequest;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Session;
 use App\Actions\Fortify\PrepareAuthenticatedSession;
 use Laravel\Fortify\Contracts\FailedTwoFactorLoginResponse;
@@ -37,12 +39,21 @@ class FortifyServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app
-            ->when([AdminController::class, AttemptToAuthenticate::class, RedirectIfTwoFactorAuthenticatable::class,ConfirmPassword::class,PrepareAuthenticatedSession::class,
-                PasswordResetLinkController::class, NewPasswordController::class,ProfileInformationController::class, UpdateUserProfileInformation::class,StatefulGuard::class,
+            ->when([AdminController::class, AttemptToAuthenticate::class, AdminRedirectIfTwoFactorAuthenticatable::class,ConfirmPassword::class,PrepareAuthenticatedSession::class,
+                PasswordResetLinkController::class, NewPasswordController::class,ProfileInformationController::class, UpdateUserProfileInformation::class,
                 TwoFactorAuthenticatedSessionController::class,TwoFactorLoginRequest::class])
             ->needs(StatefulGuard::class)
             ->give(function () {
+
                 return Auth::guard('admin');
+            });
+
+        $this->app
+            ->when([UserController::class,RedirectIfTwoFactorAuthenticatable::class])
+            ->needs(StatefulGuard::class)
+            ->give(function () {
+
+                return Auth::guard('web');
             });
 
         $this->app->instance(FailedTwoFactorLoginResponse::class, new class implements FailedTwoFactorLoginResponse {

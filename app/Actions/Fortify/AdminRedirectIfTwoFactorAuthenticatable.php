@@ -12,7 +12,7 @@ use Laravel\Fortify\Fortify;
 use Laravel\Fortify\LoginRateLimiter;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class RedirectIfTwoFactorAuthenticatable
+class AdminRedirectIfTwoFactorAuthenticatable
 {
     /**
      * The guard implementation.

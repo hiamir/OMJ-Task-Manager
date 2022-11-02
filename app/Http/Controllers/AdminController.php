@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Fortify\AdminRedirectIfTwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -39,9 +40,11 @@ class AdminController extends Controller
         $this->guard = $guard;
 
 
+
     }
 
     public function loginForm(){
+
         return view('auth.login',['guard'=>'admin']);
     }
 
@@ -64,7 +67,8 @@ class AdminController extends Controller
      */
     public function store(LoginRequest $request)
     {
-
+        Session::forget('guard');
+        Session::put('guard','admin');
         return $this->loginPipeline($request)->then(function ($request) {
             return app(AdminLoginResponse::class);
         });
@@ -94,7 +98,7 @@ class AdminController extends Controller
         return (new Pipeline(app()))->send($request)->through(array_filter([
             config('fortify.limiters.login') ? null : EnsureLoginIsNotThrottled::class,
 
-            Features::enabled(Features::twoFactorAuthentication()) ? RedirectIfTwoFactorAuthenticatable::class : null,
+            Features::enabled(Features::twoFactorAuthentication()) ? AdminRedirectIfTwoFactorAuthenticatable::class : null,
             AttemptToAuthenticate::class,
             PrepareAuthenticatedSession::class,
 
@@ -109,7 +113,6 @@ class AdminController extends Controller
      */
     public function destroy(Request $request): AdminLogoutResponse
     {
-
         Auth::guard('admin')->logout();
 
         $request->session()->invalidate();

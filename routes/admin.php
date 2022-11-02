@@ -25,17 +25,17 @@ Route::group([
     'as' => 'admin.'
 ], function () {
     Route::middleware('guard-check')->get('login', [\App\Http\Controllers\AdminController::class, 'loginForm'])->name('login');
-    Route::post('login', [\App\Http\Controllers\AdminController::class, 'store']);
+    Route::middleware('guard-check')->post('login', [\App\Http\Controllers\AdminController::class, 'store']);
     Route::post('two-factor-logout', [TwoFactorAuthenticatedSessionController::class, 'adminTwoFactorLogout'])->name('twoFactorLogout');
 //    Route::get('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'create'])->name('password.request');
 //    Route::post('forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
 //    Route::get('reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
 //    Route::post('reset-password', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'store'])->name('password.update');
-    Route::get('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'create'])->name('password.request');
-    Route::get('/reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
-    Route::post('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
-    Route::post('/reset-password', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'store'])->name('password.update');
-    Route::get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
+    Route::middleware('guard-check')->get('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::middleware('guard-check')->get('/reset-password/{token}', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'create'])->name('password.reset');
+    Route::middleware('guard-check')->post('/forgot-password', [\App\Actions\Fortify\Controllers\PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::middleware('guard-check')->post('/reset-password', [\App\Actions\Fortify\Controllers\NewPasswordController::class, 'store'])->name('password.update');
+    Route::middleware('guard-check')->get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
     Route::post('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'store'])->name('two-factor.store');;
 
 //    Route::put('/user/profile-information', [ProfileInformationController::class, 'update'])
