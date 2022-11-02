@@ -6,15 +6,14 @@ use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Pipeline;
-use App\Actions\Fortify\AttemptToAuthenticate;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Laravel\Fortify\Actions\AttemptToAuthenticate;
 use Laravel\Fortify\Actions\EnsureLoginIsNotThrottled;
 use Laravel\Fortify\Actions\PrepareAuthenticatedSession;
 use App\Actions\Fortify\RedirectIfTwoFactorAuthenticatable;
-use App\Http\Responses\AdminLoginResponse;
+use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\LoginViewResponse;
-use App\Http\Responses\LogoutResponse;
+use Laravel\Fortify\Contracts\LogoutResponse;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Http\Requests\LoginRequest;
@@ -31,49 +30,46 @@ class UserController extends Controller
     /**
      * Create a new controller instance.
      *
-     * @param \Illuminate\Contracts\Auth\StatefulGuard $guard
+     * @param  \Illuminate\Contracts\Auth\StatefulGuard  $guard
      * @return void
      */
     public function __construct(StatefulGuard $guard)
     {
         $this->guard = $guard;
-        $model = ($guard->getProvider()->getModel());
-        if ($model === 'App\Models\User')  Session::put('guard', 'web');
-    }
 
-    public function loginForm(){
-        return view('auth.login',['guard'=>'admin']);
     }
 
     /**
      * Show the login view.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Laravel\Fortify\Contracts\LoginViewResponse
      */
     public function create(Request $request): LoginViewResponse
     {
+
         return app(LoginViewResponse::class);
     }
 
     /**
      * Attempt to authenticate a new session.
      *
-     * @param \Laravel\Fortify\Http\Requests\LoginRequest $request
+     * @param  \Laravel\Fortify\Http\Requests\LoginRequest  $request
      * @return mixed
      */
     public function store(LoginRequest $request)
     {
-
+        Session::forget('guard');
+        Session::put('guard','web');
         return $this->loginPipeline($request)->then(function ($request) {
-            return app(AdminLoginResponse::class);
+            return app(LoginResponse::class);
         });
     }
 
     /**
      * Get the authentication pipeline instance.
      *
-     * @param \Laravel\Fortify\Http\Requests\LoginRequest $request
+     * @param  \Laravel\Fortify\Http\Requests\LoginRequest  $request
      * @return \Illuminate\Pipeline\Pipeline
      */
     protected function loginPipeline(LoginRequest $request)
@@ -85,7 +81,7 @@ class UserController extends Controller
         }
 
         if (is_array(config('fortify.pipelines.login'))) {
-            return (new \Illuminate\Pipeline\Pipeline(app()))->send($request)->through(array_filter(
+            return (new Pipeline(app()))->send($request)->through(array_filter(
                 config('fortify.pipelines.login')
             ));
         }
@@ -101,7 +97,7 @@ class UserController extends Controller
     /**
      * Destroy an authenticated session.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Laravel\Fortify\Contracts\LogoutResponse
      */
     public function destroy(Request $request): LogoutResponse

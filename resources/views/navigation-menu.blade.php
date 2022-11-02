@@ -10,7 +10,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-jet-nav-link href="{{ (Auth::guard('admin')->check()) ? route('admin.dashboard') : route('dashboard') }}" :active="request()->routeIs('dashboard')">
+                    <x-jet-nav-link href="{{ (Auth::guard('admin')->check() && explode('.',Route::currentRouteName())[0] ==='admin') ? route('admin.dashboard') : route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-jet-nav-link>
                 </div>
@@ -131,7 +131,7 @@
                                 {{ __('Manage Account') }}
                             </div>
 
-                            <x-jet-dropdown-link href="{{ (Auth::guard('admin')->check()) ? route('admin.profile.show') : route('profile.show') }}">
+                            <x-jet-dropdown-link href="{{ ((Auth::guard('admin')->check() && explode('.',Route::currentRouteName())[0] ==='admin')) ? route('admin.profile.show') : route('profile.show') }}">
                                 {{ __('Profile') }}
                             </x-jet-dropdown-link>
 
@@ -144,7 +144,7 @@
                             <div class="border-t border-gray-100 dark:border-olblue-800 " ></div>
 
                             <!-- Authentication -->
-                            <form method="POST" action="{{ (auth()->guard('admin')->check()) ? route('admin.logout') : route('logout') }}" x-data>
+                            <form method="POST" action="{{ ((Auth::guard('admin')->check() && explode('.',Route::currentRouteName())[0] ==='admin')) ? route('admin.logout') : route('logout') }}" x-data>
                                 @csrf
 
                                 <x-jet-dropdown-link href="{{ (auth()->guard('admin')->check()) ? route('admin.logout') : route('logout') }}"
