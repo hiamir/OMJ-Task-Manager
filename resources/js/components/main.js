@@ -9,10 +9,11 @@ export function Main(data){
      return{
          darkMode:data.darkMode,
          isSidebarOpen:false,
+         isFirstModelButtonClicked:false,
          init() {
+             this.darkMode=true;
              Alpine.effect(() => {
-                 // this.darkMode=true;
-                 console.log(this.isSidebarOpen);
+                 console.log( this.isModelButtonClicked);
              });
          }
      }
