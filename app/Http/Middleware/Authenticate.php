@@ -16,9 +16,18 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
+        if(Auth::guard('admin')->check()){
+            return route('admin.dashboard');
+        }else if(Auth::guard('web')->check()){
+            return route('dashboard');
+        }
+
         if (! $request->expectsJson()) {
-            $uri=explode('/',$request->getRequestUri());
-            return ( ($uri[1] === 'admin') ? route('admin.login') : route('login'));
+
+                $uri=explode('/',$request->getRequestUri());
+                return ( ($uri[1] === 'admin') ? route('admin.login') : route('login'));
+
+
         }
     }
 }

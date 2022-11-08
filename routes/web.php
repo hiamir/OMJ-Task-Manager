@@ -25,14 +25,18 @@ Route::get('/', function () {
 Route::group([
     'middleware' => 'guest:web',
 ], function () {
-    Route::middleware('guard-check')->get('/login', [UserController::class, 'create'])->name('login');
+    Route::group([
+        'middleware' => 'guard-check',
+    ], function () {
+        Route::get('/login', [UserController::class, 'create'])->name('login');
+        Route::get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
+        Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+        Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+        Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+        Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
+        Route::get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
+    });
     Route::post('/login', [UserController::class, 'store']);
-    Route::middleware('guard-check')->get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
-    Route::middleware('guard-check')->get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
-    Route::middleware('guard-check')->get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
-    Route::middleware('guard-check')->post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
-    Route::middleware('guard-check')->post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
-    Route::middleware('guard-check')->get('/two-factor-challenge', [TwoFactorAuthenticatedSessionController::class, 'create'])->name('two-factor.login');
 });
 
 

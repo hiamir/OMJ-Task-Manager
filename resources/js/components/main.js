@@ -5,14 +5,14 @@
 //
 // });
 
-export function Main(){
+export function Main(data){
      return{
-         darkMode: localStorage.getItem('dark') === 'true',
-
+         darkMode:data.darkMode,
+         isSidebarOpen:false,
          init() {
              Alpine.effect(() => {
-                 this.darkMode=true;
-                 console.log(this.darkMode);
+                 // this.darkMode=true;
+                 console.log(this.isSidebarOpen);
              });
          }
      }

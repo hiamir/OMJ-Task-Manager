@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      x-data="Main()"
+      x-data=" Main({ darkMode: $persist(localStorage.getItem('dark')) }) "
       x-bind:class="{ 'dark': darkMode }"
 >
     <head>

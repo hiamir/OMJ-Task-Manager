@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -7,7 +8,7 @@ module.exports = {
         './vendor/laravel/jetstream/**/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
-        "./node_modules/flowbite/**/*.js"
+        './node_modules/preline/dist/*.js',
     ],
     tailwindConfig: './styles/tailwind.config.js',
     darkMode: 'class',
@@ -15,7 +16,34 @@ module.exports = {
         scrollbar: ['dark']
     },
     theme: {
+
         colors: {
+            transparent: 'transparent',
+            current: 'currentColor',
+            black: colors.black,
+            white: colors.white,
+            gray: colors.gray,
+            slate: colors.slate,
+            neutral: colors.neutral,
+            stone: colors.stone,
+            red: colors.red,
+            orange: colors.orange,
+            amber: colors.amber,
+            lime: colors.lime,
+            green: colors.green,
+            emerald: colors.emerald,
+            teal: colors.teal,
+            cyan: colors.cyan,
+            sky: colors.sky,
+            blue: colors.blue,
+            indigo: colors.indigo,
+            violet: colors.violet,
+            purple: colors.purple,
+            fuchsia: colors.fuchsia,
+            pink: colors.pink,
+            rose: colors.rose,
+            zinc: colors.zinc,
+            yellow: colors.yellow,
           'oblue':{
               100: '#05234B',
               200: '#052044',
@@ -66,5 +94,11 @@ module.exports = {
         },
     },
 
-    plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar'),require('@tailwindcss/typography'),require('flowbite/plugin'),require('prettier-plugin-tailwindcss')],
+    plugins: [
+        require('@tailwindcss/forms'),
+        require('tailwind-scrollbar'),
+        require('@tailwindcss/typography'),
+        require('prettier-plugin-tailwindcss'),
+        require('preline/plugin'),
+    ],
 };
