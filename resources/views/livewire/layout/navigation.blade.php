@@ -266,7 +266,7 @@
 
 <!-- ========== HEADER ========== -->
 <header
-    class="sticky !h-[70px] top-0 inset-x-0 flex flex-wrap sm:justify-start xs:flex-nowrap z-[48] w-full text-sm py-2.5 sm:py-4 lg:pl-64 dark:border-oblue-100">
+    class=" !h-[70px]  top-0 inset-x-0 flex flex-wrap sm:justify-start xs:flex-nowrap z-[48] w-full text-sm py-2.5 sm:py-4 lg:pl-64 dark:border-oblue-100">
     <nav class="flex basis-full items-center w-full mx-auto px-4 sm:px-6 md:px-8" aria-label="Global">
 
         {{--     ------- Logo on Sidebar  --------        --}}

@@ -56,7 +56,9 @@ Route::middleware([
     ], function () {
         Route::get('/dashboard', \App\Http\Livewire\Admin\Dashboard::class)->name('dashboard');
 
-        Route::get('/profile', [\App\Http\Controllers\Livewire\AdminProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile', \App\Http\Livewire\Admin\Profile::class)->name('profile.show');
+        Route::get('/menu', \App\Http\Livewire\Admin\Menu::class)->name('menu');
+
         Route::put('/profile-information', [\App\Actions\Fortify\Controllers\ProfileInformationController::class, 'update'])->name('user-profile-information.update');
         Route::post('/admin/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store'])->name('two-factor.enable');
         Route::post('/admin/confirmed-two-factor-authentication', [ConfirmedTwoFactorAuthenticationController::class, 'store'])->name('two-factor.confirm');
