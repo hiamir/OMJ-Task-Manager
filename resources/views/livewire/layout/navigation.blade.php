@@ -1,3 +1,24 @@
+<header
+    class=" !h-[70px]  top-0 inset-x-0 flex flex-wrap sm:justify-start xs:flex-nowrap z-[48] w-full text-sm py-2.5 sm:py-4 lg:pl-64 dark:border-oblue-100">
+    <nav class="flex basis-full items-center w-full mx-auto px-4 sm:px-6 md:px-8" aria-label="Global">
+
+        {{--     ------- Logo on Sidebar  --------        --}}
+        <x-layout.navigation-logo-on-sidebar></x-layout.navigation-logo-on-sidebar>
+
+        <div class="w-full flex items-center justify-end ml-auto sm:justify-between sm:gap-x-3 sm:order-3">
+            <div class="flex flex-row w-full items-center justify-end gap-2">
+
+                {{--     ------- Darkmode  --------        --}}
+                <x-layout.navigation-darkmode-toggle></x-layout.navigation-darkmode-toggle>
+
+                {{--     ------- Dropdown Right  --------        --}}
+                <x-layout.navigation-dropdown-right></x-layout.navigation-dropdown-right>
+
+            </div>
+        </div>
+    </nav>
+</header>
+
 {{--<nav x-data="{ open: false }" class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-oblue-400">--}}
 {{--    <!-- Primary Navigation Menu -->--}}
 {{--    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">--}}
@@ -261,28 +282,3 @@
 {{--        </div>--}}
 {{--    </div>--}}
 {{--</nav>--}}
-
-
-
-<!-- ========== HEADER ========== -->
-<header
-    class=" !h-[70px]  top-0 inset-x-0 flex flex-wrap sm:justify-start xs:flex-nowrap z-[48] w-full text-sm py-2.5 sm:py-4 lg:pl-64 dark:border-oblue-100">
-    <nav class="flex basis-full items-center w-full mx-auto px-4 sm:px-6 md:px-8" aria-label="Global">
-
-        {{--     ------- Logo on Sidebar  --------        --}}
-        <x-layout.navigation-logo-on-sidebar></x-layout.navigation-logo-on-sidebar>
-
-        <div class="w-full flex items-center justify-end ml-auto sm:justify-between sm:gap-x-3 sm:order-3">
-            <div class="flex flex-row w-full items-center justify-end gap-2">
-
-                {{--     ------- Darkmode  --------        --}}
-                <x-layout.navigation-darkmode-toggle></x-layout.navigation-darkmode-toggle>
-
-                {{--     ------- Dropdown Right  --------        --}}
-                <x-layout.navigation-dropdown-right></x-layout.navigation-dropdown-right>
-
-            </div>
-        </div>
-    </nav>
-</header>
-<!-- ========== END HEADER ========== -->

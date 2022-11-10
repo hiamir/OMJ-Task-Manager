@@ -25,6 +25,7 @@
 
             <x-layout.sidebar.child-one :name="'Dashboard'"  href="{{ (Auth::guard('admin')->check() && explode('.',Route::currentRouteName())[0] ==='admin') ? route('admin.dashboard') : route('dashboard') }}"></x-layout.sidebar.child-one>
             <x-layout.sidebar.child-one :name="'Menu'"  href="{{route('admin.menu')}}"></x-layout.sidebar.child-one>
+            <x-layout.sidebar.child-one :name="'Menu Level'"  href="{{route('admin.menu-level')}}"></x-layout.sidebar.child-one>
 
 
 

@@ -9,14 +9,10 @@
         <!-- Menu create -->
         <x-item.modal buttonName="Create" size="small" type="add" modalHeader="Create Menu Level">
             <x-item.form method="POST">
-
                 <div class="grid grid-cols-1 gap-4">
-
-
-                  <x-item.elements.input wireName="menu.name" name="menu-name" label="Name" placeholder="Enter a name for menu item" ></x-item.elements.input>
+                    <x-item.elements.input wireName="menuLevel.name" updating="defer" name="menu-name" label="Name" placeholder="Enter a name for menu Level" ></x-item.elements.input>
                 </div>
-
-                <x-item.form-submit name="Add"></x-item.form-submit>
+                    <x-item.form-submit name="Add"></x-item.form-submit>
             </x-item.form>
         </x-item.modal>
     </x-layout.content>
