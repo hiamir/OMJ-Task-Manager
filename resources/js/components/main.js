@@ -9,6 +9,7 @@ export function Main(data) {
     return {
         darkMode: data.darkMode,
         isSidebarOpen: false,
+        toast:{'show':false,'type':'normal','message':'Some message!'},
         isFirstModelButtonClicked: false,
 
         init() {
@@ -18,11 +19,31 @@ export function Main(data) {
                 console.log(this.isFirstModelButtonClicked);
             });
         },
+
+        toastNotification() {
+            if(this.toast.show === true){
+                setTimeout(() => {
+                    this.toast.show = false
+                }, 5000)
+            }
+        },
+
         eventToListen() {
-            console.log('hello');
+
+            // First Model
             window.addEventListener('FirstModel', event => {
                 if (event.detail.show === false) {
                     this.isFirstModelButtonClicked = false
+                }
+            });
+
+            // Toast
+            window.addEventListener('Toast', event => {
+                if (event.detail.show === true) {
+                    this.toast.show=true
+                    this.toast.type=event.detail.type;
+                    this.toast.message=event.detail.message;
+                    this.toastNotification();
                 }
             });
         }

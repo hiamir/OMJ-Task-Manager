@@ -52,6 +52,7 @@ class Level extends Component
        $this->resetForm();
         $this->resetInput();
        $this->dispatchBrowserEvent('FirstModel',['show'=>false]);
+       $this->dispatchBrowserEvent('Toast',['show'=>true,'type'=>'success','message'=>"'".$level->name."'".' was added to Menu Level!']);
     }
 
     public function render()

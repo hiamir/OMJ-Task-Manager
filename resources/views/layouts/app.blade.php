@@ -25,13 +25,22 @@
 
 <div class="flex flex-col min-h-screen bg-gray-white dark:bg-oblue-600 transition-all duration-300 ">
     {{$slot}}
+
+
 </div>
 
 @stack('modals')
+
+
+
+
+
+<x-item.toast></x-item.toast>
+
 @livewireScripts
 
-<div  @click="isFirstModelButtonClicked = false" data-hs-overlay-backdrop-template id="modalBackdrop"
-:class="{ 'transition-all duration-300 fixed inset-0 z-[70] backdrop-blur-sm bg-gray-900 dark:bg-oblue-900 bg-opacity-50 dark:bg-opacity-40' : isFirstModelButtonClicked === true, ' transition-all duration-300 fixed inset-0 z-[-10] bg-gray-900 dark:bg-oblue-900 bg-opacity-0 dark:bg-opacity-0' : isFirstModelButtonClicked === false }"
+<div @click="isFirstModelButtonClicked = false" data-hs-overlay-backdrop-template id="modalBackdrop"
+     :class="{ 'transition-all duration-300 fixed inset-0 z-[70] backdrop-blur-sm bg-gray-900 dark:bg-oblue-900 bg-opacity-50 dark:bg-opacity-40' : isFirstModelButtonClicked === true, ' transition-all duration-300 fixed inset-0 z-[-10] bg-gray-900 dark:bg-oblue-900 bg-opacity-0 dark:bg-opacity-0' : isFirstModelButtonClicked === false }"
 ></div>
 </body>
 </html>
