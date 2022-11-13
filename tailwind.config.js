@@ -9,7 +9,9 @@ module.exports = {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './node_modules/preline/dist/*.js',
+        './vendor/rappasoft/laravel-livewire-tables/resources/views/**/*.blade.php',
     ],
+
     tailwindConfig: './styles/tailwind.config.js',
     darkMode: 'class',
     variants: {

@@ -32,9 +32,7 @@ export function Main(data) {
 
             // First Model
             window.addEventListener('FirstModel', event => {
-                if (event.detail.show === false) {
-                    this.isFirstModelButtonClicked = false
-                }
+                (event.detail.show === true) ?  this.isFirstModelButtonClicked = true : this.isFirstModelButtonClicked = false;
             });
 
             // Toast

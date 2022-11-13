@@ -3,18 +3,30 @@
 namespace App\Http\Livewire\Admin\Menu;
 
 use App\Models\MenuLevel;
+use App\Traits\General;
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
 class Level extends Component
 {
-    public string $pageHeader='Menu Level';
+    use General;
+
+    public string $pageHeader = 'Menu Level';
     public array $menuLevel;
 
-    public function mount(){
+    public $editMenuRecord = null;
+
+    protected $listeners = ['editMenuLevel'];
+
+    public function mount()
+    {
+        $this->formInfo('create', 'Create', 'Create', 'Create Menu Levels');
+        $this->formType = "create";
         $this->resetInput();
     }
 
-    public function resetForm(){
+    public function resetForm()
+    {
         $this->resetErrorBag();
     }
 
@@ -38,21 +50,52 @@ class Level extends Component
         ];
     }
 
-    public function resetInput(){
-        $this->menuLevel=['name'=>''];
+    public function resetInput()
+    {
+        $this->menuLevel = ['name' => ''];
+    }
+
+    public function editMenuLevel($row)
+    {
+        $this->editMenuRecord = MenuLevel::find($row)->first();
+        $this->menuLevel['name'] = $this->editMenuRecord->name;
+        $this->formInfo('update', 'Update', 'Update ' . $this->menuLevel['name'], 'Update ' . $this->menuLevel['name']);
+        $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
     }
 
 
-
-    public function submit(){
+    public function submit()
+    {
         $this->validate();
-       $level=new MenuLevel();
-       $level->name=$this->menuLevel['name'];
-       $level->save();
-       $this->resetForm();
-        $this->resetInput();
-       $this->dispatchBrowserEvent('FirstModel',['show'=>false]);
-       $this->dispatchBrowserEvent('Toast',['show'=>true,'type'=>'success','message'=>"'".$level->name."'".' was added to Menu Level!']);
+
+        switch ($this->formType) {
+
+            case 'create':
+                $level = new MenuLevel();
+                $level->name = $this->menuLevel['name'];
+                $level->save();
+
+                break;
+
+            case 'update':
+                $this->editMenuRecord->name = $this->menuLevel['name'];
+                $this->editMenuRecord->save();
+                break;
+        }
+        if ($this->formType === 'create' || $this->formType === 'update') {
+            $this->emit('refreshDatatable');
+            $this->resetForm();
+            $this->resetInput();
+            $this->dispatchBrowserEvent('FirstModel', ['show' => false]);
+
+            if($this->formType === 'update'){
+                $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $this->editMenuRecord->name . "'" . ' was updated!']);
+            }else{
+                $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $level->name . "'" . ' was added to Menu Level!']);
+            }
+
+        }
+
     }
 
     public function render()

@@ -10,12 +10,12 @@
 
 <x-item.button @click.prevent="isFirstModelButtonClicked = true; $wire.resetForm()" size="small">
     @switch($type)
-        @case('add')
+        @case('create')
         <x-svg.add class="flex w-4 h-4"></x-svg.add>
         @break
 
         @case('update')
-        <x-svg.add class="flex w-4 h-4"></x-svg.add>
+        <x-svg.edit class="flex w-4 h-4"></x-svg.edit>
         @break
 
         @case('delete')
@@ -55,7 +55,7 @@
             <div class="flex justify-between items-center py-3 px-4 border-b dark:border-olblue-800/[0.5]">
                 <h3 class="flex justify-start items-center font-bold text-gray-800 dark:text-white">
                     @switch($type)
-                        @case('add')
+                        @case('create')
                         <x-svg.add class="flex w-5 h-5"></x-svg.add>
                         @break
 
