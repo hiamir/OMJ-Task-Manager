@@ -17,7 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('svg')->unique()->nullable();
+            $table->unsignedBigInteger('menu_levels_id');
             $table->timestamps();
+
+            //FOREIGN KEYS
+            $table->foreign('menu_levels_id','menus_fk0')->on('menu_levels')->references('id')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -28,6 +32,9 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('menu_items', function (Blueprint $table) {
+            $table->dropForeign('menus_fk0');
+        });
         Schema::dropIfExists('menus');
     }
 };

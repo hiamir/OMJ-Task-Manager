@@ -17,8 +17,8 @@
 
         {{
             $attributes->merge($customAttributes)
-                ->class(['bg-white dark:bg-oblue-400 dark:text-white' => ($customAttributes['default'] ?? true) && $rowIndex % 2 === 0])
-                ->class(['bg-gray-50 dark:bg-oblue-500 dark:text-white' => ($customAttributes['default'] ?? true) && $rowIndex % 2 !== 0])
+                ->class(['transition-all duration-300 bg-white dark:bg-oblue-400 dark:text-white' => ($customAttributes['default'] ?? true) && $rowIndex % 2 === 0])
+                ->class(['transition-all duration-300 bg-gray-50 dark:bg-oblue-500 dark:text-white' => ($customAttributes['default'] ?? true) && $rowIndex % 2 !== 0])
                 ->class(['cursor-pointer' => $component->hasTableRowUrl()])
                 ->except('default')
         }}

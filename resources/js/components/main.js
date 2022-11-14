@@ -1,10 +1,3 @@
-// document.addEventListener('alpine:init', function () {
-//     Alpine.data('Main', ($wire, data) => ({
-//         darkMode: data.darkMode
-//     }));
-//
-// });
-
 export function Main(data) {
     return {
         darkMode: data.darkMode,
@@ -12,11 +5,11 @@ export function Main(data) {
         toast:{'show':false,'type':'normal','message':'Some message!'},
         isFirstModelButtonClicked: false,
 
+
         init() {
             this.darkMode = true;
             this.eventToListen();
             Alpine.effect(() => {
-                console.log(this.isFirstModelButtonClicked);
             });
         },
 
