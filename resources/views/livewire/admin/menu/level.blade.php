@@ -1,19 +1,28 @@
-<div>
-    @livewire('layout.navigation')
-    @livewire('layout.toggle')
-    @livewire('layout.sidebar')
-    @livewire('layout.header',['header'=>$pageHeader])
+<x-layout.main pageHeader="{{$pageHeader}}">
 
     <!-- PAGE CONTENT -->
     <x-layout.content>
         <!-- Menu create -->
-        <x-item.modal buttonName="{{$buttonName}}" size="small" type="{{$formType}}" modalHeader="{{$modalHeader}}">
+
+        <x-item.button wire:click.prevent="createMenuLevel" size="small" class="!block w-auto">
+                <x-svg.add class="flex w-4 h-4"></x-svg.add> <span class="flex ml-1">{{__('Create')}}</span>
+        </x-item.button>
+
+        <x-item.modal size="small" type="{{$formType}}" modalHeader="{{$modalHeader}}">
             <x-item.form method="POST">
-                <div class="grid grid-cols-1 gap-4">
-                    <x-item.elements.input wireName="menuLevel.name" updating="defer" name="menu-name" label="Name"
-                                           placeholder="Enter a name for menu Level"></x-item.elements.input>
-                </div>
-                <x-item.form-submit name="{{$submitName}}"></x-item.form-submit>
+                @if($formType === 'create' || $formType === 'update')
+                    <div class="grid grid-cols-1 gap-4">
+                        <x-item.elements.input wireName="menuLevel.name" updating="defer" name="menu-name" label="Name"
+                                               placeholder="Enter a name for menu Level"></x-item.elements.input>
+                    </div>
+                @endif
+
+                    @if($formType === 'delete' )
+                        <div class="grid grid-cols-1 gap-4">
+                         <p class="text-gray-900 dark:text-white"> Are you sure you want to delete <span class="font-bold text-red-600">{{$menuLevelRecord->name}}</span> ?</p>
+                        </div>
+                    @endif
+                <x-item.form-submit formType="{{$formType}}" type="submit" name="{{$submitName}}"></x-item.form-submit>
             </x-item.form>
         </x-item.modal>
 
@@ -23,5 +32,4 @@
         </div>
     </x-layout.content>
 
-
-</div>
+</x-layout.main>

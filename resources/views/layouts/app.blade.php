@@ -26,10 +26,8 @@
 <body class="font-sans antialiased">
 <x-jet-banner/>
 
-<div class="flex flex-col min-h-screen bg-gray-white dark:bg-oblue-600 transition-all duration-300 ">
+<div class="flex flex-col min-h-screen  bg-gray-white dark:bg-oblue-600 transition-all duration-300 ">
     {{$slot}}
-
-
 </div>
 
 @stack('modals')
