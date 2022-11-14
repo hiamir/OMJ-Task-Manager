@@ -10,6 +10,7 @@ module.exports = {
         './resources/views/**/*.blade.php',
         './node_modules/preline/dist/*.js',
         './vendor/rappasoft/laravel-livewire-tables/resources/views/**/*.blade.php',
+        './app/Http/Livewire/**/*.php',
     ],
 
     tailwindConfig: './styles/tailwind.config.js',
