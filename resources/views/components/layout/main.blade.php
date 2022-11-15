@@ -1,5 +1,5 @@
 @props(['pageHeader'])
-<div x-data=" Wire($wire,{ }) " class="flex flex-col min-h-screen">
+<div x-data=" Wire($wire,{ }) " class="flex h-full flex-col flex-grow min-h-screen">
     @livewire('layout.navigation')
     @livewire('layout.toggle')
     @livewire('layout.sidebar')

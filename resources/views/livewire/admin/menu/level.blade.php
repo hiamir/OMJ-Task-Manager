@@ -28,7 +28,7 @@
 
         <!-- Menu datatable -->
         <div class="mt-3">
-            <livewire:admin.menu.menu-level-table/>
+            <livewire:admin.menu.menu-level-datatable/>
         </div>
     </x-layout.content>
 

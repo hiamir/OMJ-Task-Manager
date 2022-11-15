@@ -18,6 +18,7 @@ module.exports = {
     variants: {
         scrollbar: ['dark']
     },
+
     theme: {
 
         colors: {
@@ -103,5 +104,6 @@ module.exports = {
         require('@tailwindcss/typography'),
         require('prettier-plugin-tailwindcss'),
         require('preline/plugin'),
+
     ],
 };

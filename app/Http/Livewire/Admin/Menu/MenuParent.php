@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Admin\Menu;
 
 use App\Models\Menu;
+use App\Traits\Data;
 use App\Traits\General;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
@@ -10,12 +11,16 @@ use Livewire\Component;
 class MenuParent extends Component
 {
     use General;
+    use Data;
 
     public string $pageHeader = 'Menu';
     public array $menu;
     public ?int $rowID = null;
+    public ?int $menuID = null;
 
     public $menuRecord = null;
+
+    public array $parentData = [];
 
     protected $listeners = ['createMenu', 'editMenu', 'deleteMenu'];
 
@@ -37,12 +42,15 @@ class MenuParent extends Component
         'menu.name.required' => 'Menu name is required.',
         'menu.name.min' => 'Menu must be at-least 4 letters long.',
         'menu.name.unique' => ':attribute menu already exists!.',
+        'menu.parent_id.integer' => ':attribute must be integer.',
+        'menu.parent_id.gt' => ':attribute must be positive integer.',
     ];
 
     protected function rules()
     {
         return [
-            'menu.name' => 'required|min:4|unique:menus,name,' . $this->rowID
+            'menu.name' => 'required|min:4|unique:menus,name,' . $this->rowID,
+            'menu.parent_id'=>'numeric|gt:0'
         ];
     }
 
@@ -50,25 +58,31 @@ class MenuParent extends Component
     {
         return [
             'menu.name' => $this->menu['name'],
+            'menu.menuID' => $this->menu['menuID'],
         ];
     }
 
     public function resetInput()
     {
-        $this->menu = ['name' => ''];
+        $this->menu = ['name' => '','menuID'=>null];
     }
 
     protected function getRecord($row)
     {
         $this->rowID = $row['id'];
-        $this->menuRecord = Menu::find($row)->first();
+        $this->menuRecord = Menu::find($this->rowID)->first();
     }
 
 
-    public function createMenu()
+    public function createMenu($id=null)
     {
+
+
         $this->resetForm();
+        if($id !== null) $this->menu['menuID']= $id;
         $this->modelInfo('create', 'Menu');
+        $this->parentData = $this->get_array_for_select_input(Menu::select('id', 'name')->where('parent_id',null)->where('id',$id)->get());
+
         $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
     }
 
@@ -88,12 +102,13 @@ class MenuParent extends Component
         $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
     }
 
-    protected function afterSave($formType){
+    protected function afterSave($formType)
+    {
         $this->emit('refreshDatatable');
         $this->resetForm();
         $this->dispatchBrowserEvent('FirstModel', ['show' => false]);
 
-        switch($formType){
+        switch ($formType) {
             case 'create':
                 $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $this->menuRecord->name . "'" . ' was added to Menu Level!']);
                 break;
@@ -112,13 +127,13 @@ class MenuParent extends Component
     public function submit()
     {
 
-
         switch ($this->formType) {
 
             case 'create':
                 $this->validate();
                 $this->menuRecord = new Menu();
                 $this->menuRecord->name = $this->menu['name'];
+                ($this->menu['menuID'] !== null) ? $this->menuRecord->parent_id = $this->menu['menuID'] : $this->menuRecord->parent_id=null;
                 $this->menuRecord->save();
                 $this->afterSave($this->formType);
                 break;
@@ -126,6 +141,7 @@ class MenuParent extends Component
             case 'update':
                 $this->validate();
                 $this->menuRecord->name = $this->menu['name'];
+                $this->menuRecord->menus_id = $this->menu['menuID'];
                 $this->menuRecord->save();
                 $this->afterSave($this->formType);
                 break;
@@ -141,6 +157,7 @@ class MenuParent extends Component
 
     public function render()
     {
-        return view('livewire.admin.menu.menu-parent');
+        $menus = Menu::with('childMenus')->where('parent_id','=',null)->get();
+        return view('livewire.admin.menu.menu-parent',['menus'=>$menus]);
     }
 }

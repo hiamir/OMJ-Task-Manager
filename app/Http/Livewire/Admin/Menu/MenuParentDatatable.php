@@ -38,7 +38,11 @@ class MenuParentDatatable extends DataTableComponent
                     ];
                 } elseif ($column->isField('name')) {
                     return [
-                        'class' => '!w-[60%]',
+                        'class' => '!w-[50%]',
+                    ];
+                }elseif ($column->isField('parent_id')) {
+                    return [
+                        'class' => '!w-[10%]',
                     ];
                 } elseif ($column->isField('created_at')) {
                     return [
@@ -89,6 +93,9 @@ class MenuParentDatatable extends DataTableComponent
                 ->searchable()
                 ->sortable(),
             Column::make("Name", "name")
+                ->searchable()
+                ->sortable(),
+            Column::make("Belongs to", "parent_id")
                 ->searchable()
                 ->sortable(),
             Column::make("Created at", "created_at")
