@@ -47,6 +47,7 @@ Route::middleware([
 ])->group(function () {
     Route::group([
         'middleware'=>'auth:web',
+        'as' => 'user.'
     ],function() {
         Route::get('/dashboard', function () {
             return view('dashboard');

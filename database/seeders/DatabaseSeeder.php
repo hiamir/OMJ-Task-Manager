@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory(10)->create();
         \App\Models\Admin::factory()->create();
 
+        $this->call(GuardSeeder::class);
         $this->call(MenuLevelSeeder::class);
     }
 }

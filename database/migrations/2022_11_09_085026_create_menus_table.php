@@ -16,12 +16,17 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->unsignedBigInteger('guards_id');
+            $table->string('route')->unique();
             $table->string('svg')->unique()->nullable();
+            $table->integer('sort');
+            $table->unsignedBigInteger('permissions_id')->nullable();
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->timestamps();
 
             //FOREIGN KEYS
-            $table->foreign('parent_id','menus_fk0')->on('menus')->references('id')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('guards_id','menus_fk0')->on('guards')->references('id')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('parent_id','menus_fk1')->on('menus')->references('id')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -34,6 +39,7 @@ return new class extends Migration
     {
         Schema::table('menus', function (Blueprint $table) {
             $table->dropForeign('menus_fk0');
+            $table->dropForeign('menus_fk1');
         });
         Schema::dropIfExists('menus');
     }

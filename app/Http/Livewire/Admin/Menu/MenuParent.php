@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Admin\Menu;
 use App\Models\Menu;
 use App\Traits\Data;
 use App\Traits\General;
-use Illuminate\Database\Eloquent\Model;
+use JetBrains\PhpStorm\ArrayShape;
 use Livewire\Component;
 
 class MenuParent extends Component
@@ -14,10 +14,10 @@ class MenuParent extends Component
     use Data;
 
     public string $pageHeader = 'Menu';
-    public array $menu;
+    public array $menu, $guards, $routes;
     public ?int $rowID = null;
     public ?int $menuID = null;
-
+    public $menus;
     public $menuRecord = null;
 
     public array $parentData = [];
@@ -42,19 +42,29 @@ class MenuParent extends Component
         'menu.name.required' => 'Menu name is required.',
         'menu.name.min' => 'Menu must be at-least 4 letters long.',
         'menu.name.unique' => ':attribute menu already exists!.',
-        'menu.parent_id.integer' => ':attribute must be integer.',
-        'menu.parent_id.gt' => ':attribute must be positive integer.',
+        'menu.menuID.integer' => ':attribute must be integer.',
+        'menu.menuID.gt' => ':attribute must be positive integer.',
+        'menu.guard.required' => 'Guard is required.',
+        'menu.guard.integer' => ':attribute must be integer.',
+        'menu.guard.gt' => ':attribute must be positive integer.',
+        'menuItem.route.unique' => ':attribute already exists.',
+        'menuItem.route.regex' => ':attribute must lower case. Allowed ' . ' only',
+        'menu.sort.integer' => ':attribute must be integer.',
+        'menu.sort.gt' => ':attribute must be positive integer.',
     ];
 
-    protected function rules()
+    #[ArrayShape(['menu.name' => "string", 'menu.menuID' => "string", 'menu.guard' => "string", 'menu.route' => "string", 'menu.sort' => "string"])] protected function rules(): array
     {
         return [
             'menu.name' => 'required|min:4|unique:menus,name,' . $this->rowID,
-            'menu.parent_id'=>'numeric|gt:0'
+            'menu.menuID' => 'numeric|gt:0|nullable',
+            'menu.guard' => 'required|numeric|gt:0',
+            'menu.route' => 'required|min:4|regex:/^[a-z,\.-]+$/|unique:menus,route,' . $this->rowID,
+            'menu.sort' => 'required|numeric|gt:0'
         ];
     }
 
-    protected function validationAttributes()
+    #[ArrayShape(['menu.name' => "mixed", 'menu.menuID' => "mixed"])] protected function validationAttributes(): array
     {
         return [
             'menu.name' => $this->menu['name'],
@@ -64,33 +74,45 @@ class MenuParent extends Component
 
     public function resetInput()
     {
-        $this->menu = ['name' => '','menuID'=>null];
+        $this->menu = ['name' => '', 'menuID' => null, 'guard' => null, 'route' => null, 'sort' => ''];
     }
 
     protected function getRecord($row)
     {
         $this->rowID = $row['id'];
-        $this->menuRecord = Menu::find($this->rowID)->first();
+        $this->menuRecord = Menu::where('id', $this->rowID)->first();
     }
 
 
-    public function createMenu($id=null)
+    public function createMenu($id = null)
     {
-
-
         $this->resetForm();
-        if($id !== null) $this->menu['menuID']= $id;
+        if ($id !== null) $this->menu['menuID'] = $id;
+        $this->routes = Data::get_routes_array_for_select_input();
         $this->modelInfo('create', 'Menu');
-        $this->parentData = $this->get_array_for_select_input(Menu::select('id', 'name')->where('parent_id',null)->where('id',$id)->get());
+        $this->parentData = $this->get_array_for_select_input(Menu::select('id', 'name')->where('id', $id)->get());
 
         $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
     }
 
-    public function editMenu($row)
+
+    public function editMenu($row, $level = null)
     {
+        $this->resetForm();
         $this->getRecord($row);
+        $this->routes = Data::get_routes_array_for_select_input([$this->menuRecord->route]);
+
+
         $this->modelInfo('update', $this->menuRecord->name);
+        $this->parentData = match ($level) {
+            'l1' => $this->get_array_for_select_input(Menu::select('id', 'name')->where('parent_id', null)->get()),
+            'l2' => $this->get_second_array_for_select_input(Menu::select('id', 'name')->where('parent_id', null)->get()),
+            default => [],
+        };
         $this->menu['name'] = $this->menuRecord->name;
+        $this->menu['menuID'] = $this->menuRecord->parent_id;
+        $this->menu['route'] = $this->menuRecord->route;
+        $this->menu['sort'] = $this->menuRecord->sort;
         $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
     }
 
@@ -130,10 +152,16 @@ class MenuParent extends Component
         switch ($this->formType) {
 
             case 'create':
+
                 $this->validate();
                 $this->menuRecord = new Menu();
+
                 $this->menuRecord->name = $this->menu['name'];
-                ($this->menu['menuID'] !== null) ? $this->menuRecord->parent_id = $this->menu['menuID'] : $this->menuRecord->parent_id=null;
+                ($this->menu['menuID'] !== null) ? $this->menuRecord->parent_id = strval($this->menu['menuID']) : $this->menuRecord->parent_id = null;
+                $this->menuRecord->route = $this->menu['route'];
+                $this->menuRecord->guards_id = $this->menu['guard'];
+                $this->menuRecord->sort = $this->menu['sort'];
+
                 $this->menuRecord->save();
                 $this->afterSave($this->formType);
                 break;
@@ -141,7 +169,10 @@ class MenuParent extends Component
             case 'update':
                 $this->validate();
                 $this->menuRecord->name = $this->menu['name'];
-                $this->menuRecord->menus_id = $this->menu['menuID'];
+                $this->menuRecord->parent_id = $this->menu['menuID'];
+                $this->menuRecord->guards_id = $this->menu['guard'];
+                $this->menuRecord->route = $this->menu['route'];
+                $this->menuRecord->sort = $this->menu['sort'];
                 $this->menuRecord->save();
                 $this->afterSave($this->formType);
                 break;
@@ -157,7 +188,16 @@ class MenuParent extends Component
 
     public function render()
     {
-        $menus = Menu::with('childMenus')->where('parent_id','=',null)->get();
-        return view('livewire.admin.menu.menu-parent',['menus'=>$menus]);
+        if (auth()->guard('admin')->check()) {
+            $this->guards = $this->guards('admin');
+            if (count($this->guards) === 1) $this->menu['guard'] = array_key_first($this->guards);
+        } else {
+            $this->guards = $this->guards('web');
+            if (count($this->guards) === 1) $this->menu['guard'] = array_key_first($this->guards);
+        }
+
+
+        $this->menus = Menu::with('childMenus')->where('parent_id', '=', null)->get();
+        return view('livewire.admin.menu.menu-parent', ['menus' => $this->menus]);
     }
 }
