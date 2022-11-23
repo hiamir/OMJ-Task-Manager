@@ -3,8 +3,11 @@
 namespace App\Http\Livewire\Admin\Menu;
 
 use App\Models\Menu;
+use App\Repositories\MenuRepository;
 use App\Traits\Data;
 use App\Traits\General;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use JetBrains\PhpStorm\ArrayShape;
 use Livewire\Component;
 
@@ -14,31 +17,26 @@ class MenuParent extends Component
     use Data;
 
     public string $pageHeader = 'Menu';
-    public array $menu, $guards, $routes;
-    public ?int $rowID = null;
-    public ?int $menuID = null;
-    public $menus;
-    public $menuRecord = null;
+    public array $menu, $guards, $routes, $parentData;
+    public ?int $rowID = null, $menuID = null;
+    public $menus, $menuRecord = null;
 
-    public array $parentData = [];
-
-    protected $listeners = ['createMenu', 'editMenu', 'deleteMenu'];
-
-
+    /*         INITIALIZATION AT START        */
     public function mount()
     {
-//        $this->modelInfo('create', 'Create', 'Create', 'Create Menu Levels');
-//        $this->formType = "create";
-        $this->resetForm();
     }
 
+    /*         RESET FORM        */
     public function resetForm()
     {
+        $this->menu= $this->Repository(name: 'resetInputs');
         $this->resetErrorBag();
-        $this->resetInput();
+        $this->resetValidation();
+
     }
 
-    protected $messages = [
+    /*         VALIDATION MESSAGES        */
+    protected array $messages = [
         'menu.name.required' => 'Menu name is required.',
         'menu.name.min' => 'Menu must be at-least 4 letters long.',
         'menu.name.unique' => ':attribute menu already exists!.',
@@ -47,13 +45,16 @@ class MenuParent extends Component
         'menu.guard.required' => 'Guard is required.',
         'menu.guard.integer' => ':attribute must be integer.',
         'menu.guard.gt' => ':attribute must be positive integer.',
+        'menu.route.required' => 'Select a route for this menu.',
         'menuItem.route.unique' => ':attribute already exists.',
         'menuItem.route.regex' => ':attribute must lower case. Allowed ' . ' only',
+        'menu.sort.required' => 'Give te order for this menu',
         'menu.sort.integer' => ':attribute must be integer.',
         'menu.sort.gt' => ':attribute must be positive integer.',
     ];
 
-    #[ArrayShape(['menu.name' => "string", 'menu.menuID' => "string", 'menu.guard' => "string", 'menu.route' => "string", 'menu.sort' => "string"])] protected function rules(): array
+    /*         VALIDATION RULES        */
+    protected function rules(): array
     {
         return [
             'menu.name' => 'required|min:4|unique:menus,name,' . $this->rowID,
@@ -64,7 +65,8 @@ class MenuParent extends Component
         ];
     }
 
-    #[ArrayShape(['menu.name' => "mixed", 'menu.menuID' => "mixed"])] protected function validationAttributes(): array
+    /*         VALIDATION ATTRIBUTES        */
+    protected function validationAttributes(): array
     {
         return [
             'menu.name' => $this->menu['name'],
@@ -72,118 +74,76 @@ class MenuParent extends Component
         ];
     }
 
-    public function resetInput()
+//    /*          RESET INPUT        */
+//    protected function resetInput()
+//    {
+//        $this->menu = ['name' => '', 'menuID' => null, 'guard' => null, 'route' => null, 'sort' => ''];
+//    }
+
+
+    /*          REPOSITORY DATA        */
+    protected function Repository($name, $type = null, $row = null, $record = null, $formInput = null, $level = null): Menu|array
     {
-        $this->menu = ['name' => '', 'menuID' => null, 'guard' => null, 'route' => null, 'sort' => ''];
-    }
+        $menuRepository = new MenuRepository();
+        switch ($name) {
+            case 'resetInputs':
+                return $menuRepository->resetInputs();
+            case 'getRecord':
+                if ($type !== 'create' && $row !== null) $this->rowID = $row['id'];
+                return $menuRepository->getRecord($type, $row);
 
-    protected function getRecord($row)
-    {
-        $this->rowID = $row['id'];
-        $this->menuRecord = Menu::where('id', $this->rowID)->first();
-    }
+            case 'formData':
+                return $menuRepository->formData($type, $row, $record);
 
+            case 'getRoutes':
+                return $menuRepository->getRoutes($type, $record);
 
-    public function createMenu($id = null)
-    {
-        $this->resetForm();
-        if ($id !== null) $this->menu['menuID'] = $id;
-        $this->routes = Data::get_routes_array_for_select_input();
-        $this->modelInfo('create', 'Menu');
-        $this->parentData = $this->get_array_for_select_input(Menu::select('id', 'name')->where('id', $id)->get());
+            case 'getParentData':
+                return $menuRepository->getParentData($type, $record, $level);
 
-        $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
-    }
+            case 'saveData':
+                return $menuRepository->saveData($record, $formInput);
 
-
-    public function editMenu($row, $level = null)
-    {
-        $this->resetForm();
-        $this->getRecord($row);
-        $this->routes = Data::get_routes_array_for_select_input([$this->menuRecord->route]);
-
-
-        $this->modelInfo('update', $this->menuRecord->name);
-        $this->parentData = match ($level) {
-            'l1' => $this->get_array_for_select_input(Menu::select('id', 'name')->where('parent_id', null)->get()),
-            'l2' => $this->get_second_array_for_select_input(Menu::select('id', 'name')->where('parent_id', null)->get()),
-            default => [],
-        };
-        $this->menu['name'] = $this->menuRecord->name;
-        $this->menu['menuID'] = $this->menuRecord->parent_id;
-        $this->menu['route'] = $this->menuRecord->route;
-        $this->menu['sort'] = $this->menuRecord->sort;
-        $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
-    }
-
-    public function deleteMenu($row)
-    {
-        $this->getRecord($row);
-        $this->modelInfo('delete', $this->menuRecord->name);
-        $this->menu['name'] = $this->menuRecord->name;
-        $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
-    }
-
-    protected function afterSave($formType)
-    {
-        $this->emit('refreshDatatable');
-        $this->resetForm();
-        $this->dispatchBrowserEvent('FirstModel', ['show' => false]);
-
-        switch ($formType) {
-            case 'create':
-                $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $this->menuRecord->name . "'" . ' was added to Menu Level!']);
-                break;
-
-            case 'update':
-                $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $this->menuRecord->name . "'" . ' was updated!']);
-                break;
-
-            case 'delete':
-                $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $this->menuRecord->name . "'" . ' was deleted!']);
-                break;
+            case 'deleteData':
+                return $menuRepository->deleteData($record);
         }
     }
 
+    /*          ASSIGN DATA TO SHOW       */
+    protected function showData($type, $row, $level): void
+    {
+        $this->menuRecord = $this->Repository(name: 'getRecord', type: $type, row: $row);
+        ($type === 'create') ? $this->modelInfo($type, 'Menu') : $this->modelInfo($type, $this->menuRecord->name);
+        $this->menu = $this->Repository(name: 'formData', type: $type, row: $row, record: $this->menuRecord);
+        $this->routes = $this->Repository(name: 'getRoutes', type: $type, record: $this->menuRecord);
+        $this->parentData = $this->Repository(name: 'getParentData', type: $type, record: $this->menuRecord, level: $level);
+    }
 
+
+    /*          SHOW MODEL FOR CREATE, UPDATE, DELETE        */
+    public function show($type, $row = null, $level = null)
+    {
+        $this->resetForm();
+        $this->showData($type, $row, $level);
+        if ($type === "create" || $type === 'update' || $type === 'delete') $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
+    }
+
+    /*          SUBMIT DATA FOR CREATE, UPDATE, DELETE        */
     public function submit()
     {
-
+        $success = [];
         switch ($this->formType) {
-
             case 'create':
-
-                $this->validate();
-                $this->menuRecord = new Menu();
-
-                $this->menuRecord->name = $this->menu['name'];
-                ($this->menu['menuID'] !== null) ? $this->menuRecord->parent_id = strval($this->menu['menuID']) : $this->menuRecord->parent_id = null;
-                $this->menuRecord->route = $this->menu['route'];
-                $this->menuRecord->guards_id = $this->menu['guard'];
-                $this->menuRecord->sort = $this->menu['sort'];
-
-                $this->menuRecord->save();
-                $this->afterSave($this->formType);
-                break;
-
             case 'update':
                 $this->validate();
-                $this->menuRecord->name = $this->menu['name'];
-                $this->menuRecord->parent_id = $this->menu['menuID'];
-                $this->menuRecord->guards_id = $this->menu['guard'];
-                $this->menuRecord->route = $this->menu['route'];
-                $this->menuRecord->sort = $this->menu['sort'];
-                $this->menuRecord->save();
-                $this->afterSave($this->formType);
+                $success = $this->Repository(name: 'saveData', record: $this->menuRecord, formInput: $this->menu);
                 break;
-
             case 'delete':
-                $this->menuRecord->delete();
-                $this->afterSave($this->formType);
+                $success = $this->Repository(name: 'deleteData', record: $this->menuRecord);
                 break;
         }
-
-
+        $this->emit('refreshSidebar');
+        ($success[0] === true) ? $this->afterSave($success, $this->formType, $this->menuRecord->name) : $this->afterSave($success, $this->formType, $success[1]);
     }
 
     public function render()
@@ -195,7 +155,6 @@ class MenuParent extends Component
             $this->guards = $this->guards('web');
             if (count($this->guards) === 1) $this->menu['guard'] = array_key_first($this->guards);
         }
-
 
         $this->menus = Menu::with('childMenus')->where('parent_id', '=', null)->get();
         return view('livewire.admin.menu.menu-parent', ['menus' => $this->menus]);

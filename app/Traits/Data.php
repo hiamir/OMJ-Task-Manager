@@ -67,7 +67,6 @@ trait Data
                     array_push($routes, $value->getName());
                 }
             }
-
         }
         return $routes;
     }
@@ -85,5 +84,34 @@ trait Data
             return array_diff($array, $assignedRoutes);
     }
 
+    public function closeFirstModal(){
+        $this->dispatchBrowserEvent('FirstModel', ['show' => false]);
+    }
 
+    /*      ACTION AFTER SAVING THE RECORD        */
+    public function afterSave($success,$formType,$recordName)
+    {
+        $this->emit('refreshDatatable');
+        $this->resetForm();
+        $this->closeFirstModal();
+
+        if($success[0]){
+            switch ($formType) {
+                case 'create':
+                    $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $recordName . "'" . ' was added!']);
+                    break;
+
+                case 'update':
+                    $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $recordName . "'" . ' was updated!']);
+                    break;
+
+                case 'delete':
+                    $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $recordName . "'" . ' was deleted!']);
+                    break;
+            }
+        }else{
+            $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'error', 'message' => 'Error: ' . $success[1]]);
+        }
+
+    }
 }

@@ -4,7 +4,7 @@
     <x-layout.content>
         <!-- Menu create -->
 
-        <x-item.button wire:click.prevent="createMenu" size="small"
+        <x-item.button wire:click.prevent="show('create')" size="small"
                        class="!block w-auto dark:bg-green-700 dark:hover:bg-green-800 ">
             <x-svg.add class="flex w-4 h-4 dark:text-green-200 dark:hover:text-white"></x-svg.add>
             <span class="flex ml-1 dark:text-green-200 dark:hover:text-white">{{__('Create')}}</span>
@@ -17,7 +17,8 @@
                         <x-item.elements.input wireName="menu.name" updating="defer" name="menu-name" label="Name"
                                                placeholder="Enter a name for menu "></x-item.elements.input>
 
-
+                        <x-item.elements.input wireName="menu.svg" updating="defer" name="menu-svg" label="SVG Icon"
+                                               placeholder="Enter a icon ('home', 'users', 'menu' ... ) "></x-item.elements.input>
 
                         <x-item.elements.select wireName="menu.guard" name="menu-guard" label="Guard" :data=$guards
                                                 placeholder=""></x-item.elements.select>
@@ -27,9 +28,9 @@
 
                         <x-item.elements.input wireName="menu.sort" updating="defer" name="menu-sort" label="Sort"
                                                placeholder="Order of this menu"></x-item.elements.input>
-                        {{--                        <x-item.elements.select wireName="menu.menuID" name="menu-menuID" label="Belongs to"--}}
-                        {{--                                                :data=$parentData--}}
-                        {{--                                                placeholder=""></x-item.elements.select>--}}
+                                                <x-item.elements.select wireName="menu.menuID" name="menu-menuID" label="Belongs to"
+                                                                        :data=$parentData
+                                                                        placeholder=""></x-item.elements.select>
                     </div>
                 @endif
 
@@ -52,16 +53,16 @@
                         <div
                             class="class=flex flex-col bg-gray-100 border-b rounded-t-xl py-3 px-4 md:py-4 md:px-3 dark:bg-oblue-100 dark:border-olblue-800/[0.5]">
                             <div class="flex items-center">
-                                <div wire:click.prevent="createMenu({{$menu->id}})"
+                                <div wire:click.prevent="show('create',{{$menu}})"
                                      class="flex transition-all duration-300 cursor-pointer  group hover:bg-green-600 hover:text-white hover:border-green-500 dark:hover:border-green-700 dark:hover:bg-green-700 flex w-8 h-8 border rounded-md border-gray-200 dark:border-olblue-800/[0.5] justify-center items-center">
                                     <x-svg.add
                                         class=" !w-4 !h-4 dark:text-olblue-300 dark:group-hover:text-white "></x-svg.add>
                                 </div>
-                                <p wire:click="editMenu({{$menu}})"
+                                <p wire:click="show('update',{{$menu}})"
                                    class="transition-all duration-300 cursor-pointer flex mx-2 px-2 py-1 justify-center items-center  w-8 h-8 border rounded-md dark:border-olblue-800/[0.5] dark:hover:text-white dark:hover:bg-blue-700 flex-grow text-sm text-gray-900 dark:text-olblue-300 font-bold capitalize">
                                     <span class="flex uppercase ">{{$menu->name}}</span>
                                 </p>
-                                <div wire:click="deleteMenu({{$menu}})"
+                                <div wire:click="show('delete',{{$menu}})"
                                      class="flex transition-all duration-300 cursor-pointer  group hover:bg-red-600 hover:text-white hover:border-red-400 dark:hover:border-red-700  dark:hover:bg-red-700 flex w-8 h-8 border rounded-md border-gray-200 dark:border-olblue-800/[0.5] justify-center items-center">
                                     <x-svg.close class=" !w-3 !h-3 dark:text-olblue-300 dark:group-hover:text-white "></x-svg.close>
                                 </div>
@@ -74,45 +75,37 @@
                                 @foreach($menu->childMenus as $childMenu1)
                                     <li class="dark:text-gray-300 my-2">
                                         <div class="inline-flex flex-row bg-gray-100 dark:bg-blue-900 px-2 py-1 rounded-md capitalize font-bold text-sm items-center items-center">
-                                            <div wire:click.prevent="createMenu({{$childMenu1->id}})"
+                                            <div wire:click.prevent="show('create',{{$childMenu1}})"
                                                  class="flex  transition-all duration-300 cursor-pointer  border-gray-200  group hover:bg-green-600 hover:text-white hover:border-green-500 dark:border-gray-100/[0.2] dark:hover:border-green-700  dark:hover:bg-green-700 flex w-6 h-6 border rounded-md   justify-center items-center">
                                                 <x-svg.add class=" flex !w-3 !h-3 dark:text-olblue-300 dark:group-hover:text-white "></x-svg.add>
                                             </div>
-                                            <span  wire:click.prevent="editMenu({{$childMenu1}},'l1')" class="transition-all duration-300 cursor-pointer mx-2 dark:hover:text-white dark:text-blue-100 text-gray-700  hover:text-gray-900 flex h-6 justify-center items-center"> {{$childMenu1->name}} </span>
-                                            <div wire:click="deleteMenu({{$childMenu1}})"
+                                            <span  wire:click.prevent="show('update',{{$childMenu1}},'l1')" class="transition-all duration-300 cursor-pointer mx-2 dark:hover:text-white dark:text-blue-100 text-gray-700  hover:text-gray-900 flex h-6 justify-center items-center"> {{$childMenu1->name}} </span>
+                                            <div wire:click="show('delete',{{$childMenu1}})"
                                                  class="flex transition-all duration-300 cursor-pointer  group hover:bg-red-600 hover:text-white dark:border-gray-100/[0.2] hover:border-red-400 dark:hover:border-red-700  dark:hover:bg-red-700 flex w-6 h-6 border rounded-md border-gray-200 dark:border-gray-100/[0.2] justify-center items-center">
                                                 <x-svg.close class=" !w-2 !h-2 dark:text-olblue-300 dark:group-hover:text-white "></x-svg.close>
                                             </div>
                                         </div>
                                     </li>
-
-
-
                                     <ul class="ml-5">
                                         @foreach($childMenu1->childMenus as $childMenu2)
                                             <li class="dark:text-gray-300 my-2">
                                                 <div class="inline-flex flex-row capitalize text-sm items-center px-2 py-1 rounded-md border dark:border-olblue-800/[0.5]">
-                                                    <div wire:click.prevent="createMenu({{$childMenu2->id}})"
-                                                         class="flex  transition-all duration-300 cursor-pointer  group hover:bg-green-600 hover:text-white hover:border-green-500 dark:hover:border-green-700  dark:hover:bg-green-700 flex w-6 h-6 border rounded-md border-gray-200 dark:border-olblue-800/[0.5] justify-center items-center">
+                                                    <div
+{{--                                                        wire:click.prevent="show('create',{{$childMenu2}})"--}}
+                                                         class="flex  transition-all duration-300  flex w-6 h-6 border rounded-md border-gray-200 dark:border-olblue-800/[0.5] justify-center items-center">
                                                         <x-svg.add class=" flex !w-3 !h-3 dark:text-olblue-300 dark:group-hover:text-white "></x-svg.add>
                                                     </div>
-                                                    <span  wire:click.prevent="editMenu({{$childMenu2}},'l2')" class="transition-all duration-300 cursor-pointer dark:hover:text-blue-500 mx-2 flex h-6 justify-center items-center"> {{$childMenu2->name}} </span>
-                                                    <div wire:click="deleteMenu({{$childMenu2}})"
+                                                    <span  wire:click.prevent="show('update',{{$childMenu2}},'l2')" class="transition-all duration-300 cursor-pointer dark:hover:text-blue-500 mx-2 flex h-6 justify-center items-center"> {{$childMenu2->name}} </span>
+                                                    <div wire:click="show('delete',{{$childMenu2}})"
                                                          class="flex transition-all duration-300 cursor-pointer  group hover:bg-red-600 hover:text-white hover:border-red-400 dark:hover:border-red-700  dark:hover:bg-red-700 flex w-6 h-6 border rounded-md border-gray-200 dark:border-olblue-800/[0.5] justify-center items-center">
                                                         <x-svg.close class=" !w-2 !h-2 dark:text-olblue-300 dark:group-hover:text-white "></x-svg.close>
                                                     </div>
                                                 </div>
                                             </li>
                                         @endforeach
-
                                     </ul>
-
-
-
                                 @endforeach
-
                             </ul>
-
                         </div>
                     </div>
                 @endforeach

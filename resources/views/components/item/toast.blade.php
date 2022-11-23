@@ -1,5 +1,5 @@
 
-<div class="absolute bottom-10 right-10"
+<div class="absolute bottom-10 right-10 "
      x-show="toast.show"
      x-transition:enter="transition ease-out duration-300"
      x-transition:enter-start="opacity-0"
