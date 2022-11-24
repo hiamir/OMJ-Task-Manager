@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->unsignedBigInteger('guards_id');
-            $table->string('route')->unique();
-            $table->string('svg')->unique()->nullable();
+            $table->string('route')->nullable();
+            $table->string('svg')->nullable();
             $table->integer('sort');
             $table->unsignedBigInteger('permissions_id')->nullable();
             $table->unsignedBigInteger('parent_id')->nullable();

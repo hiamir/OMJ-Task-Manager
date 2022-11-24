@@ -13,8 +13,9 @@ class MenuRepository implements MenuRepositoryInterface
     use Data;
 
     /*     RESET FORM FIELDS     */
-    public function resetInputs(): array{
-        return ['name' => null,'svg' => null, 'menuID' => null, 'guard' => null, 'route' => null, 'sort' => null];
+    public function resetInputs(): array
+    {
+        return ['name' => null, 'svg' => null, 'menuID' => null, 'guard' => null, 'route' => null, 'sort' => null];
     }
 
     /*     GET RECORD     */
@@ -63,8 +64,8 @@ class MenuRepository implements MenuRepositoryInterface
 
             case 'update':
                 return match ($level) {
-                    'l1' => $this->get_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
-                    'l2' => $this->get_second_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
+                    'l1' => $this->get_all_parent_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null),$record->id),
+                    'l2' => $this->get_all_parent_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
                     default => $this->get_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
                 };
 
@@ -77,51 +78,66 @@ class MenuRepository implements MenuRepositoryInterface
     /*     GET ROUTE DATA ARRAY       */
     public function getRoutes($type, $record): array
     {
-        return match ($type) {
-            'create' => Data::get_routes_array_for_select_input(),
-            'update' => Data::get_routes_array_for_select_input([$record->route]),
-            default => [],
-        };
+
+        switch ($type) {
+            case 'create':
+                $arr = Data::get_routes_array_for_select_input();
+                return (array_merge(["none" => "None"], $arr));
+            case 'update':
+                $arr = Data::get_routes_array_for_select_input([$record->route]);
+                return (array_merge(["none" => "None"], $arr));
+            default:
+                return [];
+
+        }
+//        $arr = Data::get_routes_array_for_select_input([$record->route]);
+//        $arr = (array_merge(["none" => "None"], $arr));
+//        return match ($type) {
+//            'create' => Data::get_routes_array_for_select_input(),
+//            'update' => $arr,
+//            default => [],
+//        };
+
     }
 
     /*     ASSIGN DATA FOR SUBMIT       */
     public function assignData($record, $formInputs): Menu
     {
         $record->name = ucfirst($formInputs['name']);
-        $record->svg = strtolower($formInputs['svg']);
+        $record->svg = ($formInputs['svg'] === '') ? null : strtolower($formInputs['svg']);
         $record->parent_id = $formInputs['menuID'];
-        $record->route = $formInputs['route'];
+        $record->route = ($formInputs['route'] === 'none') ? 'none' : $formInputs['route'];
         $record->guards_id = $formInputs['guard'];
         $record->sort = $formInputs['sort'];
         return $record;
     }
 
     /*     SAVE DATA FOR SUBMIT       */
-    public function saveData($record,$formInputs):array
+    public function saveData($record, $formInputs): array
     {
         try {
-          $success=  DB::transaction(function () use ($record,$formInputs) {
-               $this->assignData($record,$formInputs)->save();
-               return [true, $record];
+            $success = DB::transaction(function () use ($record, $formInputs) {
+                $this->assignData($record, $formInputs)->save();
+                return [true, $record];
             });
         } catch (\Exception $e) {
             DB::rollback();
-            return  [false, $e->getMessage()];
+            return [false, $e->getMessage()];
         }
-      return $success;
+        return $success;
     }
 
     /*     DELETE DATA FOR SUBMIT       */
     public function deleteData($record): array
     {
         try {
-            $success= DB::transaction(function () use ($record) {
+            $success = DB::transaction(function () use ($record) {
                 $record->delete();
-               return [true, $record];
+                return [true, $record];
             });
         } catch (\Exception $e) {
             DB::rollback();
-            return  [false, $e->getMessage()];
+            return [false, $e->getMessage()];
         }
         return $success;
     }

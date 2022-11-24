@@ -34,7 +34,22 @@ trait Data
     {
         $array = [];
         foreach ($record as $data) {
-            $array[$data->id] = $data->name;
+            $array[$data->id] = $data->name.' (Parent)';
+        }
+        return $array;
+    }
+
+    /*      GET ALL PARENTS FOR SELECT OPTIONS        */
+    public function get_all_parent_array_for_select_input($record,$exclude=null): array
+    {
+        $array = [];
+        foreach ($record as $data) {
+            $array[$data->id] = $data->name.' (Parent)';
+            foreach ($data->childMenus as $childData) {
+                if($childData->id !== $exclude) {
+                    $array[$childData->id] = $childData->name . ' (Child)';
+                }
+            }
         }
         return $array;
     }

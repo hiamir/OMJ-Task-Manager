@@ -20,50 +20,53 @@
                 {{ __('Task Manager') }}
             </x-jet-nav-link>
         </div>
-
         <x-layout.sidebar.parent>
-                @foreach($sideBar as $menu)
-                        <li class="hs-accordion" id="{{$menu->id}}-accordion">
-                            <a class="hs-accordion-toggle flex items-center gap-x-2.5 py-2 px-2.5 hs-accordion-active:text-blue-600 hs-accordion-active:hover:bg-transparent text-sm text-slate-700 rounded-md hover:bg-slate-100  dark:hover:bg-oblue-500 dark:text-slate-400 dark:hover:bg-oblue-500 dark:hs-accordion-active:text-white dark:hs-accordion-active:bg-oblue-100"
-                               href=@if(count($menu->childMenus) > 0) "javascript:;" @else"{{route($menu->route)}}" @endif>
-                            <x-svg.select :type="$menu->svg"></x-svg.select>
-                                {{$menu->name}}
-                              @if(count($menu->childMenus) > 0)  <x-layout.sidebar.arrow-direction/> @endif
-                            </a>
+            @foreach($sideBar as $menu)
 
-                            <div id="{{$menu->id}}-accordion"
-                                 class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden">
-                                <ul class="hs-accordion-group pt-2" data-hs-accordion-always-open>
-
-                                    @foreach($menu->childMenus as $childMenu1)
+                <li class="hs-accordion @if($menu->route !== 'none'){{ ((in_array(Route::currentRouteName(), $this->getRoutes($menu))) ? 'active' : '') }} @endif"
+                    id="{{$menu->id}}-accordion">
+                    <a class="hs-accordion-toggle flex items-center gap-x-2.5 py-2 px-2.5 {{ ((in_array(Route::currentRouteName(), $this->getRoutes($menu))) ? 'bg-oblue-100' : '') }} hs-accordion-active:text-blue-900 hs-accordion-active:hover:bg-transparent text-sm font-semibold text-slate-700 rounded-md hover:bg-slate-100  dark:hover:bg-oblue-500 dark:text-slate-400 dark:hover:bg-oblue-500 dark:hs-accordion-active:text-white hs-accordion-active:bg-gray-200 dark:hs-accordion-active:bg-oblue-100"
+                       href=@if(count($menu->childMenus) > 0) "javascript:;" @else @if($menu->route !== 'none')
+                        "{{route($menu->route)}}" @else "javascript:;" @endif  @endif>
+                    <x-svg.select :type="$menu->svg" class="h-5 w-5"></x-svg.select>{{$menu->name}}
+                    @if(count($menu->childMenus) > 0)
+                        <x-layout.sidebar.arrow-direction/> @endif
+                        </a>
+                        <div id="{{$menu->id}}-accordion"
+                             class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 {{ ((in_array(Route::currentRouteName(), $this->getRoutes($menu))) ? 'active ' : 'hidden') }}">
+                            <ul class="hs-accordion-group pt-2" data-hs-accordion-always-open>
+                                @foreach($menu->childMenus as $childMenu1)
                                     <li class="hs-accordion" id="{{$menu->id}}-accordion-sub-1">
-                                        <a class="hs-accordion-toggle flex items-center gap-x-3.5 py-2 px-2.5 pl-9 hs-accordion-active:text-blue-600 hs-accordion-active:hover:bg-transparent text-sm text-slate-700 rounded-md hover:bg-slate-100  dark:hover:bg-oblue-500 dark:text-slate-400 dark:hover:bg-oblue-500 dark:hs-accordion-active:text-white"
-                                           href=@if(count($childMenu1->childMenus) > 0 ) "javascript:;" @else "{{ route($childMenu1->route) }}" @endif">
-                                            {{$childMenu1->name}}
-                                            @if(count($childMenu1->childMenus) > 0)  <x-layout.sidebar.arrow-direction/> @endif
-                                        </a>
-                                        <div id="{{$menu->id}}-accordion-sub-1"
-                                             class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden">
-                                            <ul class="pl-0">
+                                        <a class="hs-accordion-toggle flex items-center gap-x-2.5 py-2 px-2.5 {{ ((in_array(Route::currentRouteName(), $this->getRoutes($childMenu1))) ? '!text-gray-900 dark:!text-white font-normal dark:bg-oblue-400' : 'text-gray-700 dark:text-olblue-500') }} {{ (count($childMenu1->childMenus ) > 0) ? '' : '' }} hs-accordion-active:text-blue-600 hs-accordion-active:hover:bg-transparent text-sm text-slate-700 hover:bg-slate-100 dark:hs-accordion-active:bg-oblue-400 rounded-md dark:hover:bg-oblue-500 dark:text-slate-400 dark:hover:bg-oblue-500 dark:hs-accordion-active:text-white"
+                                           href=@if(count($childMenu1->childMenus) > 0 ) "javascript:;" @else @if($childMenu1->route !== 'none')
+                                            "{{ route($childMenu1->route) }}" @else "javascript:;" @endif  @endif">
+                                        <x-svg.three-dots-horizontal :type="$menu->svg"
+                                                                     class="h-5 w-5 hs-accordion-active:block  hidden"></x-svg.three-dots-horizontal>
+                                        <x-svg.three-dots-verticle :type="$menu->svg"
+                                                                   class="h-5 w-5 hs-accordion-active:hidden block"></x-svg.three-dots-verticle> {{$childMenu1->name}}
+                                        @if(count($childMenu1->childMenus) > 0)
+                                            <x-layout.sidebar.arrow-direction/> @endif
+                                            </a>
+                                            <div id="{{$menu->id}}-accordion-sub-1"
+                                                 class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 {{ ((in_array(Route::currentRouteName(), $this->getRoutes($childMenu1))) ? 'active' : 'hidden') }}">
+                                                <ul class="pl-0">
+                                                    @foreach($childMenu1->childMenus as $childMenu2)
+                                                        <li>
+                                                            <a class="flex items-center {{ (((Route::currentRouteName() ===$childMenu2->route)) ? '!text-white !font-normal' : 'text-olblue-500') }} gap-x-3.5 py-2 px-2.5  pl-10  text-sm text-slate-700 rounded-md hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-oblue-500"
+                                                               href="{{ route($childMenu2->route) }}">
+                                                                {{$childMenu2->name}}
+                                                            </a>
+                                                        </li>
 
-                                                @foreach($childMenu1->childMenus as $childMenu2)
-                                                <li>
-                                                    <a class="flex items-center gap-x-3.5 py-2 px-2.5 pl-10 text-sm text-slate-700 rounded-md hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-oblue-500"
-                                                       href="{{ route($childMenu2->route) }}">
-                                                        {{$childMenu2->name}}
-                                                    </a>
-                                                </li>
-
-                                                @endforeach
-                                            </ul>
-                                        </div>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
                                     </li>
-
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </li>
-                @endforeach
+                                @endforeach
+                            </ul>
+                        </div>
+                </li>
+            @endforeach
         </x-layout.sidebar.parent>
     </div>
     <!-- End Sidebar -->

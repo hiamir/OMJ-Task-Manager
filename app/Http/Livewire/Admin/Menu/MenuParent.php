@@ -19,7 +19,7 @@ class MenuParent extends Component
     public string $pageHeader = 'Menu';
     public array $menu, $guards, $routes, $parentData;
     public ?int $rowID = null, $menuID = null;
-    public $menus, $menuRecord = null;
+    public $menuRecord = null;
 
     /*         INITIALIZATION AT START        */
     public function mount()
@@ -32,8 +32,8 @@ class MenuParent extends Component
         $this->menu= $this->Repository(name: 'resetInputs');
         $this->resetErrorBag();
         $this->resetValidation();
-
     }
+
 
     /*         VALIDATION MESSAGES        */
     protected array $messages = [
@@ -45,9 +45,10 @@ class MenuParent extends Component
         'menu.guard.required' => 'Guard is required.',
         'menu.guard.integer' => ':attribute must be integer.',
         'menu.guard.gt' => ':attribute must be positive integer.',
+        'menu.svg.unique' => ':attribute already exists',
         'menu.route.required' => 'Select a route for this menu.',
-        'menuItem.route.unique' => ':attribute already exists.',
-        'menuItem.route.regex' => ':attribute must lower case. Allowed ' . ' only',
+        'menu.route.unique' => ':attribute already exists.',
+        'menu.route.regex' => ':attribute is invalid',
         'menu.sort.required' => 'Give te order for this menu',
         'menu.sort.integer' => ':attribute must be integer.',
         'menu.sort.gt' => ':attribute must be positive integer.',
@@ -60,7 +61,8 @@ class MenuParent extends Component
             'menu.name' => 'required|min:4|unique:menus,name,' . $this->rowID,
             'menu.menuID' => 'numeric|gt:0|nullable',
             'menu.guard' => 'required|numeric|gt:0',
-            'menu.route' => 'required|min:4|regex:/^[a-z,\.-]+$/|unique:menus,route,' . $this->rowID,
+//            'menu.svg' => 'unique:menus,svg,' . $this->rowID,
+//            'menu.route' => '|unique:menus,route,' . $this->rowID,
             'menu.sort' => 'required|numeric|gt:0'
         ];
     }
@@ -70,7 +72,9 @@ class MenuParent extends Component
     {
         return [
             'menu.name' => $this->menu['name'],
+            'menu.route' => 'Route',
             'menu.menuID' => $this->menu['menuID'],
+            'menu.svg' => $this->menu['svg'],
         ];
     }
 
@@ -156,7 +160,7 @@ class MenuParent extends Component
             if (count($this->guards) === 1) $this->menu['guard'] = array_key_first($this->guards);
         }
 
-        $this->menus = Menu::with('childMenus')->where('parent_id', '=', null)->get();
-        return view('livewire.admin.menu.menu-parent', ['menus' => $this->menus]);
+        $menus = Menu::with('childMenus')->where('parent_id', '=', null)->orderBy('sort','ASC')->get();
+        return view('livewire.admin.menu.menu-parent', ['menus' => $menus]);
     }
 }

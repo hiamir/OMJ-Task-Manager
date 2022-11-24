@@ -18,7 +18,7 @@
                                                placeholder="Enter a name for menu "></x-item.elements.input>
 
                         <x-item.elements.input wireName="menu.svg" updating="defer" name="menu-svg" label="SVG Icon"
-                                               placeholder="Enter a icon ('home', 'users', 'menu' ... ) "></x-item.elements.input>
+                                               placeholder="Enter a icon (`home`, `users`, `menu` ... ) "></x-item.elements.input>
 
                         <x-item.elements.select wireName="menu.guard" name="menu-guard" label="Guard" :data=$guards
                                                 placeholder=""></x-item.elements.select>

@@ -1,4 +1,4 @@
-@props(['type'=>null,'class'=>null])
+@props(['type'=>null])
 @switch ($type)
     @case('add')
     <x-svg.add {{$attributes->merge() }}></x-svg.add>
@@ -10,6 +10,10 @@
 
     @case('close')
     <x-svg.close {{$attributes->merge() }}></x-svg.close>
+    @break
+
+    @case('cog')
+    <x-svg.cog {{$attributes->merge() }}></x-svg.cog>
     @break
 
     @case('cross-circle')
@@ -40,6 +44,10 @@
     <x-svg.information {{$attributes->merge() }}></x-svg.information>
     @break
 
+    @case('three-dots-horizontal')
+    <x-svg.three-dots-horizontal {{$attributes->merge() }}></x-svg.three-dots-horizontal>
+    @break
+
     @case('menu')
     <x-svg.menu {{$attributes->merge() }}></x-svg.menu>
     @break
@@ -64,7 +72,7 @@
     <x-svg.trash  {{$attributes->merge() }} ></x-svg.trash>
     @break
 
-    @case('user')
+    @case('users')
     <x-svg.users  {{$attributes->merge() }} ></x-svg.users>
     @break
 
