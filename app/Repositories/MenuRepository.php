@@ -15,7 +15,7 @@ class MenuRepository implements MenuRepositoryInterface
     /*     RESET FORM FIELDS     */
     public function resetInputs(): array
     {
-        return ['name' => null, 'svg' => null, 'menuID' => null, 'guard' => null, 'route' => null, 'sort' => null];
+        return ['name' => null, 'svg' => null, 'parent_id' => null, 'guard' => null, 'route' => null, 'sort' => null];
     }
 
     /*     GET RECORD     */
@@ -43,12 +43,13 @@ class MenuRepository implements MenuRepositoryInterface
         $menu = [];
         $menu['name'] = $record->name;
         $menu['svg'] = $record->svg;
+        $menu['guards_id'] = $record->guards_id;
         if ($type === 'create' && $row === null) {
-            $menu['menuID'] = null;
+            $menu['parent_id'] = null;
         } elseif ($type === 'create' && $row !== null) {
-            $menu['menuID'] = $row['id'];
+            $menu['parent_id'] = $row['id'];
         } else {
-            $menu['menuID'] = $record->parent_id;
+            $menu['parent_id'] = $record->parent_id;
         }
         $menu['route'] = $record->route;
         $menu['sort'] = $record->sort;
@@ -64,8 +65,8 @@ class MenuRepository implements MenuRepositoryInterface
 
             case 'update':
                 return match ($level) {
-                    'l1' => $this->get_all_parent_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null),$record->id),
-                    'l2' => $this->get_all_parent_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
+                    'l1' => $this->get_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
+                    'l2' => $this->get_second_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
                     default => $this->get_array_for_select_input($this->getRecordByField(['id', 'name'], 'parent_id', null)),
                 };
 
@@ -79,24 +80,24 @@ class MenuRepository implements MenuRepositoryInterface
     public function getRoutes($type, $record): array
     {
 
-        switch ($type) {
-            case 'create':
-                $arr = Data::get_routes_array_for_select_input();
-                return (array_merge(["none" => "None"], $arr));
-            case 'update':
-                $arr = Data::get_routes_array_for_select_input([$record->route]);
-                return (array_merge(["none" => "None"], $arr));
-            default:
-                return [];
-
-        }
-//        $arr = Data::get_routes_array_for_select_input([$record->route]);
-//        $arr = (array_merge(["none" => "None"], $arr));
-//        return match ($type) {
-//            'create' => Data::get_routes_array_for_select_input(),
-//            'update' => $arr,
-//            default => [],
-//        };
+//        switch ($type) {
+//            case 'create':
+//                $arr = Data::get_routes_array_for_select_input();
+//                return (array_merge(["" => "None"], $arr));
+//            case 'update':
+//                $arr = Data::get_routes_array_for_select_input([$record->route]);
+//                return (array_merge(["" => "None"], $arr));
+//            default:
+//                return [];
+//
+//        }
+        $arr = Data::get_routes_array_for_select_input([$record->route]);
+        $arr = (array_merge(["none" => "None"], $arr));
+        return match ($type) {
+            'create' => Data::get_routes_array_for_select_input(),
+            'update' => $arr,
+            default => [],
+        };
 
     }
 
@@ -104,9 +105,9 @@ class MenuRepository implements MenuRepositoryInterface
     public function assignData($record, $formInputs): Menu
     {
         $record->name = ucfirst($formInputs['name']);
-        $record->svg = ($formInputs['svg'] === '') ? null : strtolower($formInputs['svg']);
-        $record->parent_id = $formInputs['menuID'];
-        $record->route = ($formInputs['route'] === 'none') ? 'none' : $formInputs['route'];
+        $record->svg = strtolower($formInputs['svg']);
+        $record->parent_id = $formInputs['parent_id'];
+        $record->route = ($formInputs['route'] === 'none') ? null : $formInputs['route'];
         $record->guards_id = $formInputs['guard'];
         $record->sort = $formInputs['sort'];
         return $record;

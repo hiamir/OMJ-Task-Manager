@@ -9,24 +9,31 @@ trait General
     public string $submitName = 'Create';
     public string $modalHeader = 'Create';
 
-    public function modelInfo($formType, $name, $submitName='', $modalHeader='')
+    public function modelInfo($formType, $name, $submitName = '', $modalHeader = '')
     {
         switch ($formType) {
             case 'create':
                 $this->formType = $formType;
-                ($submitName==='') ? $this->submitName = "let`s Create" :  $this->submitName = $submitName;
-                ($modalHeader==='') ? $this->modalHeader = "New ".$name :  $this->modalHeader = $modalHeader;
+                ($submitName === '') ? $this->submitName = "let`s Create" : $this->submitName = $submitName;
+                ($modalHeader === '') ? $this->modalHeader = "New " . $name : $this->modalHeader = $modalHeader;
                 break;
             case 'update':
                 $this->formType = $formType;
-                ($submitName==='') ? $this->submitName = "Yes, Update" :  $this->submitName = $submitName;
-                ($modalHeader==='') ? $this->modalHeader = "Update ".$name :  $this->modalHeader = $modalHeader;
+                ($submitName === '') ? $this->submitName = "Yes, Update" : $this->submitName = $submitName;
+                ($modalHeader === '') ? $this->modalHeader = "Update " . $name : $this->modalHeader = $modalHeader;
                 break;
             case 'delete':
                 $this->formType = $formType;
-                ($submitName==='') ? $this->submitName = "Yes, Delete" :  $this->submitName = $submitName;
-                ($modalHeader==='') ? $this->modalHeader = "Delete ".$name :  $this->modalHeader = $modalHeader;
+                ($submitName === '') ? $this->submitName = "Yes, Delete" : $this->submitName = $submitName;
+                ($modalHeader === '') ? $this->modalHeader = "Delete " . $name : $this->modalHeader = $modalHeader;
                 break;
         }
     }
+
+    public function showModal($type, $name = null)
+    {
+        ($type === 'create') ? $this->modelInfo($type, 'Menu') : $this->modelInfo($type, $name);
+        $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
+    }
+
 }

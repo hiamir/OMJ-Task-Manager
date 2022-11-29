@@ -17,22 +17,25 @@ trait Data
     }
 
     /*      GET GUARD ARRAY FOR SELECT OPTIONS        */
-    public function guards($code=null): array
+    public static function guards($code = null): array
     {
-        if($code === strtolower('admin')) {
+        if ($code === strtolower('admin')) {
             $guards = Guard::where('code', $code)->get();
-        }else if($code === strtolower('web')){
+        } else if ($code === strtolower('web')) {
             $guards = Guard::where('code', $code)->get();
-        }else{
+        } else {
             $guards = Guard::all();
         }
-        return $this->get_array_for_select_input($guards);
+        return Data::get_array_for_select_input(record: $guards, isNull: false);
     }
 
+
     /*      GET ARRAY FOR SELECT OPTIONS        */
-    public function get_array_for_select_input($record): array
+    public static function get_array_for_select_input($record, $isNull): array
     {
         $array = [];
+        if ($isNull) $array = array_merge(array("null" => 'None'), $array);
+
         foreach ($record as $data) {
             $array[$data->id] = $data->name.' (Parent)';
         }
@@ -51,13 +54,15 @@ trait Data
                 }
             }
         }
+
         return $array;
     }
 
     /*      GET SECOND ARRAY FOR SELECT OPTIONS        */
-    public function get_second_array_for_select_input($record): array
+    public static function get_second_array_for_select_input($record, $isNull): array
     {
         $array = [];
+        if ($isNull) $array = array_merge(array("null" => 'None'), $array);
         foreach ($record as $key => $value) {
             foreach ($value->childMenus as $data) {
                 $array[$data->id] = $data->name;
@@ -71,14 +76,13 @@ trait Data
     {
         $routeCollection = Route::getRoutes();
         $routes = [];
-
         foreach ($routeCollection as $value) {
-            if(Auth::guard('admin')->check()){
-                if (str_contains($value->getName(), 'admin.') ) {
+            if (Auth::guard('admin')->check()) {
+                if (str_contains($value->getName(), 'admin.')) {
                     array_push($routes, $value->getName());
                 }
-            }else{
-                if ( str_contains($value->getName(), 'admin.')) {
+            } else {
+                if (str_contains($value->getName(), 'admin.')) {
                     array_push($routes, $value->getName());
                 }
             }
@@ -86,31 +90,50 @@ trait Data
         return $routes;
     }
 
+    /*         RESET FORM        */
+    public function resetForm()
+    {
+        $this->resetErrorBag();
+        $this->resetValidation();
+    }
+
     /*      GET ROUTE ARRAY FOR SELECT OPTIONS        */
     public static function get_routes_array_for_select_input($id = null): array
     {
-            $array = [];
-            $assignedRoutes = json_decode(Menu::pluck('route'));
+        $array = [];
+        $assignedRoutes = json_decode(Menu::pluck('route'));
 
-            if (isset($id)) $assignedRoutes = array_diff($assignedRoutes, $id);
-            foreach (Data::all_user_routes() as $key => $value) {
-                $array[$value] = $value;
-            }
-            return array_diff($array, $assignedRoutes);
+        if (isset($id)) $assignedRoutes = array_diff($assignedRoutes, $id);
+        foreach (Data::all_user_routes() as $key => $value) {
+            $array[$value] = $value;
+        }
+        return array_diff($array, $assignedRoutes);
     }
 
-    public function closeFirstModal(){
+    /*      CLOSE FIRST MODEL      */
+    public function closeFirstModal()
+    {
         $this->dispatchBrowserEvent('FirstModel', ['show' => false]);
     }
 
+    /*      ALTER ARRAY KEYS        */
+    public static function AlterArrayKeys($name, $array): array
+    {
+        $newAttributes = [];
+        foreach ($array as $key => $value) {
+            $newAttributes[$name . '.' . $key] = $value;
+        }
+        return $newAttributes;
+    }
+
     /*      ACTION AFTER SAVING THE RECORD        */
-    public function afterSave($success,$formType,$recordName)
+    public function afterSave($output, $formType, $recordName)
     {
         $this->emit('refreshDatatable');
         $this->resetForm();
         $this->closeFirstModal();
 
-        if($success[0]){
+        if ($output[0]) {
             switch ($formType) {
                 case 'create':
                     $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $recordName . "'" . ' was added!']);
@@ -124,9 +147,27 @@ trait Data
                     $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'success', 'message' => "'" . $recordName . "'" . ' was deleted!']);
                     break;
             }
-        }else{
-            $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'error', 'message' => 'Error: ' . $success[1]]);
+        } else {
+            $this->dispatchBrowserEvent('Toast', ['show' => true, 'type' => 'error', 'message' => 'Error: ' . $output[1]]);
         }
 
+    }
+
+    /*      GET ALL PUBLIC PROPERTIES DEFINED BY SUBCLASS        */
+    public function getPublicProperties(): array
+    {
+        $publicProperties = array_filter((new \ReflectionObject($this))->getProperties(), function ($property) {
+            return $property->isPublic() && !$property->isStatic();
+        });
+
+        $data = [];
+
+        foreach ($publicProperties as $property) {
+            if ($property->getDeclaringClass()->getName() !== self::class) {
+                $data[$property->getName()] = $this->getInitializedPropertyValue($property);
+            }
+        }
+
+        return $data;
     }
 }

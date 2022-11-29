@@ -1,6 +1,6 @@
 @props([
 'wireName',
-'updating'=>'defer',
+'updating'=>'debounce',
 'debounce'=>'500ms',
 'size'=>'small',
 'label',
