@@ -30,7 +30,6 @@ class MenuOperation
         )->validate();
         try {
             $success = DB::transaction(function () use ($menu) {
-
                 $menu->save();
                 return [true, $menu];
             });

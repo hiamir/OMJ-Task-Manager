@@ -11,6 +11,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable implements MustVerifyEmail
 {
@@ -20,6 +21,7 @@ class Admin extends Authenticatable implements MustVerifyEmail
     use HasTeams;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasRoles;
 
     protected $guard='admin';
     protected $table='admins';

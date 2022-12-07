@@ -5,10 +5,24 @@ namespace App\Traits;
 use App\Models\Guard;
 use App\Models\Menu;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 trait Data
 {
+    /*      GET MODELS        */
+    public static function getAvailableModels(): array
+    {
+
+        $models = [];
+        $modelsPath = app_path('Models');
+        $modelFiles = File::allFiles($modelsPath);
+        foreach ($modelFiles as $modelFile) {
+            $models[] = $modelFile->getFilenameWithoutExtension();
+        }
+        return $models;
+    }
+
 
     /*      GET URI GUARD        */
     public static function uri_guard($request)

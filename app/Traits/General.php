@@ -30,9 +30,9 @@ trait General
         }
     }
 
-    public function showModal($type, $name = null)
+    public function showModal($type, $name)
     {
-        ($type === 'create') ? $this->modelInfo($type, 'Menu') : $this->modelInfo($type, $name);
+        $this->modelInfo($type, $name);
         $this->dispatchBrowserEvent('FirstModel', ['show' => true]);
     }
 
