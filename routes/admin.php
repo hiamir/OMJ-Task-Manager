@@ -63,6 +63,7 @@ Route::middleware([
         Route::get('/menu-levels', \App\Http\Livewire\Admin\Menu\Level::class)->name('menu-level');
 
 
+        Route::get('/users', \App\Http\Livewire\Admin\Users\Index::class)->name('users');
         Route::get('/roles', \App\Http\Livewire\Admin\Roles\Index::class)->name('roles');
         Route::get('/permissions', \App\Http\Livewire\Admin\Permissions\Index::class)->name('permissions');
 

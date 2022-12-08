@@ -1,11 +1,12 @@
 @props([
 'wireName',
 'updating'=>'debounce',
-'debounce'=>'500ms',
+'debounce'=>'200ms',
 'size'=>'small',
 'label',
 'name',
 'placeholder',
+'disabled'=>false,
 ])
 
 <div {{ $attributes->merge(['class']) }}>
@@ -13,19 +14,20 @@
     <div class="relative">
         @switch($updating)
             @case('defer')
-                <x-item.input wire:model.defer="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}"></x-item.input>
+                <x-item.input wire:model.defer="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}"
+                              disabled="{{$disabled}}"></x-item.input>
             @break
 
             @case('lazy')
-                <x-item.input wire:model.lazy="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}"></x-item.input>
+                <x-item.input wire:model.lazy="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}" disabled="{{$disabled}}"></x-item.input>
             @break
 
             @case('debounce')
-                <x-item.input wire:model.debounce.500ms="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}"></x-item.input>
+                <x-item.input wire:model.debounce.500ms="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}" disabled="{{$disabled}}"></x-item.input>
             @break
 
             @default
-             <x-item.input wire:model="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}"></x-item.input>
+             <x-item.input wire:model="{{$wireName}}" name="{{$name}}" placeholder="{{$placeholder}}" size="{{$size}}" disabled="{{$disabled}}"></x-item.input>
             @break
 
             @endswitch

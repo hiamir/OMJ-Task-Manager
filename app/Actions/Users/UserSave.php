@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Actions\Permissions;
+namespace App\Actions\Users;
 
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
-use Spatie\Permission\Models\Permission;
 
-class PermissionSave
+class UserSave
 {
     use AsAction;
     use withAttributes;
@@ -18,19 +18,19 @@ class PermissionSave
     /**
      * @throws ValidationException
      */
-    public function handle(Permission $permission):array
+    public function handle(User $user):array
     {
-      $permission= UserSanitizeData::run($permission);
-        $data = $this->set('permission', $permission)->fill($permission->toArray());
+      $user= UserSanitizeData::run($user);
+        $data = $this->set('user', $user)->fill($user->toArray());
         Validator::make(
             $data->attributes,
-            UserValidation::make()->rules($this->permission->id),
+            UserValidation::make()->rules($this->user->id),
             UserValidation::make()->messages(),
         )->validate();
         try {
-            $success = DB::transaction(function () use ($permission) {
-                $permission->save();
-                return [true, $permission];
+            $success = DB::transaction(function () use ($user) {
+                $user->save();
+                return [true, $user];
             });
         } catch (\Exception $e) {
             DB::rollback();

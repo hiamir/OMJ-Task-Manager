@@ -1,6 +1,7 @@
 @props([
 'name'=>'',
 'placeholder'=>'',
+'disabled'=>false,
 'size'=>'small',
 'sizeSmall'=>'py-2 px-3 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-oblue-300 dark:border-olblue-800/[0.5] dark:text-gray-400',
 'sizeMedium'=>'py-2 px-3 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-oblue-800 dark:border-gray-700 dark:text-gray-400',
@@ -21,5 +22,5 @@
         {{ $attributes->merge(['class' => $sizeLarge])}}
         @break
 @endswitch
-
+@if($disabled) disabled @endif
 >

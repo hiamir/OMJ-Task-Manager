@@ -32,10 +32,6 @@ class Index extends Component
     public Role $role;
 
 
-
-
-
-
     /*         INITIALIZATION AT START        */
     public function mount()
     {

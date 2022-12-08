@@ -1,20 +1,17 @@
 <?php
 
-namespace App\Http\Livewire\Admin\Permissions;
+namespace App\Http\Livewire\Admin\Users;
 
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\User;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
-use Rappasoft\LaravelLivewireTables\Views\Filters\TextFilter;
-use Spatie\Permission\Models\Permission;
 
-class PermissionsDatatable extends DataTableComponent
+class UsersDatatable extends DataTableComponent
 {
-    protected $model = Permission::class;
+    protected $model = User::class;
 
 
-    public string $tableName = 'Permissions';
+    public string $tableName = 'Users';
 
     public $columnSearch = [
         'names' => null,
@@ -43,16 +40,12 @@ class PermissionsDatatable extends DataTableComponent
                         'class' => '!w-[20%] text-center',
                     ];
                 }
-                elseif ($column->isField('model')) {
+                elseif ($column->isField('email')) {
                     return [
                         'class' => '!w-[20%] !text-center',
                     ];
                 }
-                elseif ($column->isField('guard_name')) {
-                    return [
-                        'class' => '!w-[20%] text-center',
-                    ];
-                } elseif ($column->isField('created_at')) {
+               elseif ($column->isField('created_at')) {
                     return [
                         'class' => '!w-[15%]',
                     ];
@@ -77,21 +70,12 @@ class PermissionsDatatable extends DataTableComponent
                     return [
                         'class' => 'mx-auto',
                     ];
-                } elseif ($column->isField('model')) {
-                    return [
-                        'class' => 'mx-auto',
-                    ];
-                }
-                elseif ($column->isField('guard_name')) {
-                    return [
-                        'class' => 'mx-auto',
-                    ];
                 }
 
                 return [];
             })
             ->setTdAttributes(function (Column $column, $row, $columnIndex, $rowIndex) {
-                if ($columnIndex === 2 || $columnIndex === 3 || $columnIndex === 4 || $columnIndex === 5) {
+                if ( $columnIndex === 4 || $columnIndex === 5) {
                     return [
                         'class' => 'text-center',
                     ];
@@ -112,10 +96,7 @@ class PermissionsDatatable extends DataTableComponent
             Column::make("Name", "name")
                 ->searchable()
                 ->sortable(),
-            Column::make("Model", "model")
-                ->searchable()
-                ->sortable(),
-            Column::make("Guard Name", "guard_name")
+            Column::make("Model", "email")
                 ->searchable()
                 ->sortable(),
             Column::make("Created at", "created_at")
@@ -141,24 +122,6 @@ class PermissionsDatatable extends DataTableComponent
         ];
     }
 
-    public function filters(): array
-    {
-        $permissions=Permission::select('model')->distinct()->get();
-        $models=(json_decode($permissions->pluck('model'),true));
-        $array=['%'=>'None'];
-        foreach ($models as $model){
-            $array[$model]=$model;
-        }
 
-        return [
-            SelectFilter::make('Model')
-                ->setFilterPillTitle('Permission Models')
-
-                ->options($array)
-                ->filter(function(Builder $builder, string $value) {
-                    $builder->where('permissions.model', 'like', $value);
-                }),
-        ];
-    }
 
 }

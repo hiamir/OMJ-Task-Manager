@@ -2,8 +2,8 @@
 
 namespace App\Actions\Permissions;
 
-use App\Models\Menu;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Spatie\Permission\Models\Permission;
 
 class PermissionValidation
 {
@@ -12,24 +12,42 @@ class PermissionValidation
     public function rules($id=null): array
     {
         return [
-            'role.name' => 'required|min:4|unique:roles,name,' . $id,
-            'role.guard_name' => 'required',
+            'permission.name' => 'required|min:4|unique:permissions,name,' . $id,
+            'permission.model' => 'required',
+            'permission.guard_name' => 'required',
         ];
     }
 
-    public function attributes($role): array
+    public function validationAttributes($permission): array
     {
         return [
-            'role.name' =>$role['name'],
+            'permission.name' =>$permission['name'],
         ];
     }
 
     public function messages(){
        return [
-            'role.name.required' => 'Menu name is required.',
-            'role.name.min' => 'Menu must be at-least 4 letters long.',
-            'role.name.unique' => ':attribute menu already exists!.',
-            'role.guard_name.required' => 'Guard is required.',
+            'permission.name.required' => 'Permission name is required.',
+            'permission.name.min' => 'Permission must be at-least 4 letters long.',
+            'permission.name.unique' => ':attribute menu already exists!.',
+            'permission.model.required' => 'Model is required.',
+            'permission.guard_name.required' => 'Guard is required.',
         ];
     }
+
+    public function updated(Permission $permission, $variable, $value){
+        switch ($variable){
+            case "permission.name":
+                ($value==='') ? $permission['name']=(strtolower($permission['guard_name']) === 'web') ? 'user-'.strtolower($permission['model']).'-' : strtolower($permission['guard_name']).'-'.strtolower($permission['model']).'-' :  $permission['name']=$value;
+
+                break;
+            case "permission.model":
+                $permission['name']=(strtolower($permission['guard_name']) === 'web') ? 'user-'.strtolower($value).'-' : strtolower($permission['guard_name']).'-'.strtolower($value).'-';
+                break;
+        }
+        ($permission['guard_name'] !== null && $permission['model'] !== null) ? $disabled=false : $disabled=true;
+
+        return $disabled;
+    }
+
 }

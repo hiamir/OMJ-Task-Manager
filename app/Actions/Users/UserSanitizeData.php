@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Actions\Permissions;
+namespace App\Actions\Users;
 
 use Lorisleiva\Actions\Concerns\AsAction;
 use Lorisleiva\Actions\Concerns\WithAttributes;
 use Spatie\Permission\Models\Permission;
 
-class PermissionSanitizeData
+class UserSanitizeData
 {
     use AsAction;
     use withAttributes;

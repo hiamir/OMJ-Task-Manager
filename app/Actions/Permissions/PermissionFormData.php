@@ -14,7 +14,6 @@ class PermissionFormData
 
     public function handle($type,$row=null): Permission
     {
-
         return ( ($type==='update' || $type==='delete') && $row !== null) ? Permission::find($row['id']) : new Permission();
     }
 

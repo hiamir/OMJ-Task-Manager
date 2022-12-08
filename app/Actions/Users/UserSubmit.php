@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Actions\Permissions;
+namespace App\Actions\Users;
 
 
 use App\Traits\Data;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class PermissionSubmit
+class UserSubmit
 {
     use AsAction;
     use Data;
