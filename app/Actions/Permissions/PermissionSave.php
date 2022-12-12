@@ -20,12 +20,12 @@ class PermissionSave
      */
     public function handle(Permission $permission):array
     {
-      $permission= UserSanitizeData::run($permission);
+      $permission= PermissionSanitizeData::run($permission);
         $data = $this->set('permission', $permission)->fill($permission->toArray());
         Validator::make(
             $data->attributes,
-            UserValidation::make()->rules($this->permission->id),
-            UserValidation::make()->messages(),
+            PermissionValidation::make()->rules($this->permission->id),
+            PermissionValidation::make()->messages(),
         )->validate();
         try {
             $success = DB::transaction(function () use ($permission) {

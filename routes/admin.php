@@ -59,7 +59,7 @@ Route::middleware([
         Route::get('/profile', \App\Http\Livewire\Admin\Profile::class)->name('profile.show');
 
         //  Menu
-        Route::get('/menu', \App\Http\Livewire\Admin\Menu\MenuParent::class)->name('menu');
+        Route::get('/menu', \App\Http\Livewire\Admin\Menu\Index::class)->name('menu');
         Route::get('/menu-levels', \App\Http\Livewire\Admin\Menu\Level::class)->name('menu-level');
 
 

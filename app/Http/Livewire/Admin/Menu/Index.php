@@ -13,7 +13,7 @@ use App\Traits\Data;
 use App\Traits\General;
 use Livewire\Component;
 
-class MenuParent extends Component
+class Index extends Component
 {
     use General;
     use Data;
@@ -55,6 +55,6 @@ class MenuParent extends Component
     public function render()
     {
         $menus = Menu::with('childMenus')->where('parent_id', '=', null)->orderBy('sort', 'ASC')->get();
-        return view('livewire.admin.menu.menu-parent', ['menus' => $menus]);
+        return view('livewire.admin.menu.index', ['menus' => $menus]);
     }
 }

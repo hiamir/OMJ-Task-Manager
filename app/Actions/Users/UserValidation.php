@@ -17,10 +17,10 @@ class UserValidation
         ];
     }
 
-    public function validationAttributes($user): array
+    public function attributes($user): array
     {
         return [
-            'user.name' =>$user['name'],
+            'user.email' =>$user['email'],
         ];
     }
 
@@ -30,7 +30,7 @@ class UserValidation
            'user.name.min' => 'Permission must be at-least 4 letters long.',
             'user.email.required' => 'Permission name is required.',
             'user.email.email' => ':attribute must be valid email',
-            'user.email.unique' => ':attribute menu already exists!.',
+            'user.email.unique' => 'This email address ":attribute" already exists!.',
         ];
     }
 

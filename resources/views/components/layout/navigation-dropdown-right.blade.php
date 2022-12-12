@@ -40,7 +40,7 @@
         </div>
         <div class="py-2 first:pt-0 last:pb-0">
             <x-layout.dropdown-icon-link>
-                <x-svg.gear width="16" height="16"></x-svg.gear> {{ __('Account Settings') }}
+                <x-svg.cog width="16" height="16"></x-svg.cog> {{ __('Account Settings') }}
             </x-layout.dropdown-icon-link>
 
             {{--     ------- Logout  --------        --}}

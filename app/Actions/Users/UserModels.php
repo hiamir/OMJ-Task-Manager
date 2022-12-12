@@ -16,8 +16,8 @@ class UserModels
         $include=['Role','Permission'];
         $exclude = ['Admin', 'Membership', 'Team', 'TeamInvitation'];
         $array = [];
-        foreach (array_diff(array_merge($include,$models),$exclude) as $model) {
-            $array[$model] = $model;
+        foreach (array_diff(array_merge($include,$models),$exclude) as $modelData) {
+            $array[$modelData] = $modelData;
         }
         $models = $array;
         if (auth()->guard('admin')->check()) {

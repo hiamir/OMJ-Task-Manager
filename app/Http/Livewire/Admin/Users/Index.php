@@ -27,8 +27,8 @@ class Index extends Component
     /*         UPDATING FIELD MAKE NAME FROM GUARD AND MODEL        */
     public function updated($variable, $value)
     {
-        $this->disabled = UserValidation::make()->updated($this->user, $variable, $value);
-        $this->validateOnly('User.name');
+//        $this->disabled = UserValidation::make()->updated($this->user, $variable, $value);
+        $this->validateOnly('user.email');
     }
 
 
@@ -41,9 +41,16 @@ class Index extends Component
     /*         INPUT RULES        */
     protected function rules(): array
     {
-        return UserValidation::make()->rules();
+        return UserValidation::make()->rules($this->user->id);
     }
 
+    protected function messages(){
+        return UserValidation::make()->messages();
+    }
+
+    protected function validationAttributes(){
+        return UserValidation::make()->attributes($this->user);
+    }
 
     /*          SHOW MODEL FOR CREATE, UPDATE, DELETE        */
     public function show($data)

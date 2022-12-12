@@ -15,8 +15,8 @@ class PermissionSubmit
     public function handle($thiss,$formType,$permission): void
     {
         $output = match ($formType) {
-            'create', 'update' => UserSave::run($permission),
-            'delete' => UserDelete::run($permission),
+            'create', 'update' => PermissionSave::run($permission),
+            'delete' => PermissionDelete::run($permission),
             default => [],
         };
         $thiss->dispatchBrowserEvent('FirstModel', ['show' => false]);

@@ -75,7 +75,7 @@
                         <div class="py-3 px-4 md:py-4 md:px-4">
 
                             <ul>
-                                @foreach($menu->childMenus as $childMenu1)
+                                @foreach($menu->childMenus->sortBy('sort') as $childMenu1)
                                     <li class="dark:text-gray-300 my-2">
                                         <div
                                             class="inline-flex flex-row bg-gray-100 dark:bg-blue-900 px-2 py-1 rounded-md capitalize font-bold text-sm items-center items-center">
